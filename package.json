@@ -1,0 +1,23 @@
+{
+  "name": "questions-answers-system",
+  "version": "1.0.0",
+  "description": "A server systems design project for Hack Reactor",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rpp33-sdc-jasmine/Questions-Answers.git"
+  },
+  "author": "Caitlin Winters",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rpp33-sdc-jasmine/Questions-Answers/issues"
+  },
+  "homepage": "https://github.com/rpp33-sdc-jasmine/Questions-Answers#readme",
+  "devDependencies": {
+    "jest": "^27.5.1",
+    "mongoose": "^6.2.7"
+  }
+}
