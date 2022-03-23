@@ -4,32 +4,60 @@ USE questions_answers
 
 DROP TABLE IF EXISTS questions;
 CREATE TABLE questions (
-  id VARCHAR(36) NOT NULL,
-  PRIMARY KEY (id),
   question_id INT NOT NULL,
   product_id INT NOT NULL,
-  date DATETIME,
+  body VARCHAR(1000),
+  date_written INT,
   asker_name VARCHAR(30),
-  question_helpfulness INT,
-  reported BOOLEAN
+  email VARCHAR(50),
+  reported BOOLEAN,
+  question_helpfulness INT
 );
 
 DROP TABLE IF EXISTS answers;
 CREATE TABLE answers (
-  id VARCHAR(36) NOT NULL,
-  PRIMARY KEY (id),
   answer_id INT NOT NULL,
   question_id INT NOT NULL,
-  answer_date DATETIME,
+  body VARCHAR(1000),
+  date_written INT,
   answerer_name VARCHAR(30),
+  reported BOOLEAN,
   answer_helpfulness INT
 );
 
 DROP TABLE IF EXISTS photos;
 CREATE TABLE photos (
-  id VARCHAR(36) NOT NULL,
-  PRIMARY KEY (id),
   photo_id INT NOT NULL,
   answer_id INT NOT NULL,
   url VARCHAR(300)
 );
+
+LOAD DATA LOCAL INFILE '/Users/caitlinwinters/Desktop/Questions-Answers-Data/questions.csv'
+INTO TABLE questions
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '\"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+ALTER TABLE questions ADD COLUMN id varchar(36);
+UPDATE questions SET id = UUID();
+
+LOAD DATA LOCAL INFILE '/Users/caitlinwinters/Desktop/Questions-Answers-Data/answers.csv'
+INTO TABLE answers
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '\"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+ALTER TABLE answers ADD COLUMN id varchar(36);
+UPDATE answers SET id = UUID();
+
+LOAD DATA LOCAL INFILE '/Users/caitlinwinters/Desktop/Questions-Answers-Data/answers_photos.csv'
+INTO TABLE photos
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+OPTIONALLY ENCLOSED BY '\"'
+IGNORE 1 ROWS;
+
+ALTER TABLE photos ADD COLUMN id varchar(36);
+UPDATE photos SET id = UUID();
