@@ -6,12 +6,13 @@ module.exports= {
       if (err) {
         console.log('Error retrieving questions from the db', err);
       } else {
+        //TODO: Need to return unix time stamp properly formatted
         callback(rows);
       }
     })
   },
   postQuestion: (question, callback) => {
-    // question ID needs to autoincremented from the last question
+    //TODO: question ID needs to autoincremented from the last question
     const questionFields = 'id, question_id, product_id, body, date_written, asker_name, email';
     db.query(`INSERT INTO questions (${questionFields}) VALUES (uuid(), ${question.question_id}, ${question.product_id}, "${question.body}", UNIX_TIMESTAMP(), "${question.asker_name}", "${question.email}")`, (err, data) => {
         if (err) {
@@ -22,7 +23,6 @@ module.exports= {
               callback(null, data)
           }
     })
-
   },
   getAnswers: (id) => {
 
