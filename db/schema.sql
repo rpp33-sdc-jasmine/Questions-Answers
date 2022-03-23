@@ -7,7 +7,7 @@ CREATE TABLE questions (
   question_id INT NOT NULL,
   product_id INT NOT NULL,
   body VARCHAR(1000),
-  date_written INT,
+  date_written VARCHAR(13),
   asker_name VARCHAR(30),
   email VARCHAR(50),
   reported BOOLEAN,
@@ -19,7 +19,7 @@ CREATE TABLE answers (
   answer_id INT NOT NULL,
   question_id INT NOT NULL,
   body VARCHAR(1000),
-  date_written INT,
+  date_written VARCHAR(13),
   answerer_name VARCHAR(30),
   reported BOOLEAN,
   answer_helpfulness INT
@@ -56,7 +56,6 @@ LOAD DATA LOCAL INFILE '/Users/caitlinwinters/Desktop/Questions-Answers-Data/ans
 INTO TABLE photos
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n'
-OPTIONALLY ENCLOSED BY '\"'
 IGNORE 1 ROWS;
 
 ALTER TABLE photos ADD COLUMN id varchar(36);
