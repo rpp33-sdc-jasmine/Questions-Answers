@@ -13,7 +13,7 @@ module.exports= {
   postQuestion: (question, callback) => {
     // question ID needs to autoincremented from the last question
     const questionFields = 'id, question_id, product_id, body, date_written, asker_name, email';
-    db.query(`INSERT INTO questions (${questionFields}) VALUES (uuid(), ${question.question_id}, ${question.product_id}, "${question.body}", NOW(), "${question.asker_name}", "${question.email}")`, (err, data) => {
+    db.query(`INSERT INTO questions (${questionFields}) VALUES (uuid(), ${question.question_id}, ${question.product_id}, "${question.body}", UNIX_TIMESTAMP(), "${question.asker_name}", "${question.email}")`, (err, data) => {
         if (err) {
             console.log('Error inserting question into db', err);
             callback(err);

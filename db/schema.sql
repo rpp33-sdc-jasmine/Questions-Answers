@@ -39,8 +39,9 @@ OPTIONALLY ENCLOSED BY '\"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 
-ALTER TABLE questions ADD COLUMN id varchar(36);
+ALTER TABLE questions ADD COLUMN id varchar(36) NOT NULL;
 UPDATE questions SET id = UUID();
+ALTER TABLE questions ADD PRIMARY KEY (id);
 
 LOAD DATA LOCAL INFILE '/Users/caitlinwinters/Desktop/Questions-Answers-Data/answers.csv'
 INTO TABLE answers
@@ -49,8 +50,9 @@ OPTIONALLY ENCLOSED BY '\"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 
-ALTER TABLE answers ADD COLUMN id varchar(36);
+ALTER TABLE answers ADD COLUMN id varchar(36) NOT NULL;
 UPDATE answers SET id = UUID();
+ALTER TABLE answers ADD PRIMARY KEY (id);
 
 LOAD DATA LOCAL INFILE '/Users/caitlinwinters/Desktop/Questions-Answers-Data/answers_photos.csv'
 INTO TABLE photos
@@ -58,5 +60,6 @@ FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 
-ALTER TABLE photos ADD COLUMN id varchar(36);
+ALTER TABLE photos ADD COLUMN id varchar(36) NOT NULL;
 UPDATE photos SET id = UUID();
+ALTER TABLE photos ADD PRIMARY KEY (id);
