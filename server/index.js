@@ -13,14 +13,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/question', (req, res) => {
-  // let question = req.query;
-  let question = {
-    'question_id': 1,
-    'product_id': 2,
-    body: 'This is the body of the question',
-    'asker_name': 'Caitlin',
-    email: 'caitlin.p.winters@gmail.com'
-  }
+  let question = req.query;
   models.postQuestion(question, (err, data) => {
     if (err) {
       console.log('Error inserting question into db', err)

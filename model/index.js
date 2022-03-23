@@ -28,23 +28,3 @@ module.exports= {
 
   }
 };
-
-
-//CSV
-// id,product_id,body,date_written,asker_name,asker_email,reported,helpful
-
-// SCHEMA
-// id VARCHAR(36) NOT NULL,
-//PRIMARY KEY (id),
-//question_id INT NOT NULL,
-//product_id INT NOT NULL,
-//date DATETIME,
-//asker_name VARCHAR(30),
-//question_helpfulness INT,
-//reported BOOLEAN
-
-//POST QUESTION API
-// body	text	Text of question being asked
-// name	text	Username for question asker
-// email	text	Email address for question asker
-// product_id	integer	Required ID of the Product for which the question is posted
