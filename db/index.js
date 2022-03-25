@@ -1,17 +1,20 @@
 const mysql = require('mysql');
 
-var dbConnection = mysql.createConnection({
+const dbConnection = mysql.createConnection({
   user: 'root',
   password: '',
   database: 'questions_answers'
 });
 
-dbConnection.connect(function(err) {
-  if (err) {
-    console.log('Database Connection Error!');
-  } else {
-    console.log('Database Connection Success!');
-  }
-});
+const connect = () => {
+  return new Promise((resolve) => {
+    resolve(dbConnection.connect());
+  })
+};
 
-module.exports.dbConnection = dbConnection;
+const disconnect = () => {
+  dbConnection.end();
+}
+
+module.exports.connect = connect;
+module.exports.disconnect = disconnect;
