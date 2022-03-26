@@ -7,7 +7,7 @@ CREATE TABLE questions (
   question_id INT NOT NULL,
   product_id INT NOT NULL,
   body VARCHAR(1000),
-  date_written VARCHAR(13),
+  date_written INT(11),
   asker_name VARCHAR(30),
   email VARCHAR(50),
   reported BOOLEAN,
@@ -19,7 +19,7 @@ CREATE TABLE answers (
   answer_id INT NOT NULL,
   question_id INT NOT NULL,
   body VARCHAR(1000),
-  date_written VARCHAR(13),
+  date_written INT(11),
   answerer_name VARCHAR(30),
   reported BOOLEAN,
   answer_helpfulness INT
