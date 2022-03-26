@@ -4,7 +4,7 @@
   "description": "A server systems design project for Hack Reactor",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest --detectOpenHandles --coverage",
     "start": "nodemon ./server/index.js"
   },
   "repository": {

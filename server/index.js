@@ -6,10 +6,14 @@ const port = 4000;
 
 
 app.get('/', (req, res) => {
-  models.getQuestions((data) => {
-    console.log('should be tootsies', data);
+  const id = 1;
+  models.getQuestions(id, (results) => {
+    let data = {
+      product_id: id,
+      results: results
+    }
+    res.status(200).send(data);
   });
-  res.end('All done');
 });
 
 app.get('/question', (req, res) => {

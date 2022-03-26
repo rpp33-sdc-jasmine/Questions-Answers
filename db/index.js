@@ -6,15 +6,4 @@ const dbConnection = mysql.createConnection({
   database: 'questions_answers'
 });
 
-const connect = () => {
-  return new Promise((resolve) => {
-    resolve(dbConnection.connect());
-  })
-};
-
-const disconnect = () => {
-  dbConnection.end();
-}
-
-module.exports.connect = connect;
-module.exports.disconnect = disconnect;
+module.exports.dbConnection = dbConnection;
