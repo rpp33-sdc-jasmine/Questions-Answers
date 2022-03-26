@@ -4,7 +4,8 @@
   "description": "A server systems design project for Hack Reactor",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --detectOpenHandles --coverage",
+    "start": "nodemon ./server/index.js"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,12 @@
   },
   "homepage": "https://github.com/rpp33-sdc-jasmine/Questions-Answers#readme",
   "devDependencies": {
-    "jest": "^27.5.1",
-    "mongoose": "^6.2.7"
+    "jest": "^27.5.1"
+  },
+  "dependencies": {
+    "express": "^4.17.3",
+    "mongoose": "^6.2.7",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.15"
   }
 }
