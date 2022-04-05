@@ -44,22 +44,22 @@ app.post('/qa/questions/:question_id/answers', (req, res) => {
 });
 
 app.put('/qa/questions/:question_id/helpful', (req, res) => {
-  id = req.params.question_id;
+  questionId = req.params.question_id;
   res.status(201).send('Success Updating Question Helpfulness');
 })
 
 app.put('/qa/questions/:question_id/report', (req, res) => {
-  id = req.params.question_id;
+  questionId = req.params.question_id;
   res.status(201).send('Success Reporting Question');
 })
 
 app.put('/qa/answers/:answer_id/helpful', (req, res) => {
-  id = req.params.answer_id;
+  answerId = req.params.answer_id;
   res.status(201).send('Success Updating Answer Helpfulness');
 })
 
 app.put('/qa/answers/:answer_id/report', (req, res) => {
-  id = req.params.answer_id;
+  answerId = req.params.answer_id;
   res.status(201).send('Success Reporting Answer');
 })
 
