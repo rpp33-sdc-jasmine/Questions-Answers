@@ -7,15 +7,14 @@ const port = 4000;
 
 app.get('/', (req, res) => {
   const id = 1;
-  models.getQuestions(id, (results) => {
-    let data = {
-      product_id: id,
-      results: results
-    }
-    res.status(200).send(data);
-  });
+  models.getQuestions(id)
+  .then((response) => {
+    res.status(200).send(response)
+  })
+  .catch((err) => {
+    console.log('Error Retrieving Questions and Answers from Database', err);
+  })
 });
-
 app.get('/question', (req, res) => {
   let question = req.query;
   models.postQuestion(question, (err, data) => {
@@ -31,3 +30,15 @@ app.get('/question', (req, res) => {
 app.listen(port, () => {
   console.log(`Listening at Localhost: ${port}`);
 });
+
+
+// app.get('/', (req, res) => {
+//   const id = 1;
+//   models.getQuestions(id, (results) => {
+//     let data = {
+//       product_id: id,
+//       results: results
+//     }
+//     res.status(200).send(data);
+//   });
+// });

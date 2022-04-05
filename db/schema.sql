@@ -6,23 +6,23 @@ DROP TABLE IF EXISTS questions;
 CREATE TABLE questions (
   question_id INT NOT NULL,
   product_id INT NOT NULL,
-  body VARCHAR(1000),
-  date_written INT(11),
+  question_body VARCHAR(1000),
+  question_date INT(11),
   asker_name VARCHAR(30),
   email VARCHAR(50),
-  reported BOOLEAN,
-  question_helpfulness INT
+  question_helpfulness INT,
+  reported BOOLEAN
 );
 
 DROP TABLE IF EXISTS answers;
 CREATE TABLE answers (
-  answer_id INT NOT NULL,
+  id INT NOT NULL,
   question_id INT NOT NULL,
   body VARCHAR(1000),
-  date_written INT(11),
+  date INT(11),
   answerer_name VARCHAR(30),
-  reported BOOLEAN,
-  answer_helpfulness INT
+  helpfulness INT,
+  reported BOOLEAN
 );
 
 DROP TABLE IF EXISTS photos;
@@ -39,9 +39,9 @@ OPTIONALLY ENCLOSED BY '\"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 
-ALTER TABLE questions ADD COLUMN id varchar(36) NOT NULL;
-UPDATE questions SET id = UUID();
-ALTER TABLE questions ADD PRIMARY KEY (id);
+ALTER TABLE questions ADD COLUMN id_key varchar(36) NOT NULL;
+UPDATE questions SET id_key = UUID();
+ALTER TABLE questions ADD PRIMARY KEY (id_key);
 
 LOAD DATA LOCAL INFILE '/Users/caitlinwinters/Desktop/Questions-Answers-Data/answers.csv'
 INTO TABLE answers
@@ -50,9 +50,9 @@ OPTIONALLY ENCLOSED BY '\"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 
-ALTER TABLE answers ADD COLUMN id varchar(36) NOT NULL;
-UPDATE answers SET id = UUID();
-ALTER TABLE answers ADD PRIMARY KEY (id);
+ALTER TABLE answers ADD COLUMN id_key varchar(36) NOT NULL;
+UPDATE answers SET id_key = UUID();
+ALTER TABLE answers ADD PRIMARY KEY (id_key);
 
 LOAD DATA LOCAL INFILE '/Users/caitlinwinters/Desktop/Questions-Answers-Data/answers_photos.csv'
 INTO TABLE photos
@@ -60,6 +60,6 @@ FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 
-ALTER TABLE photos ADD COLUMN id varchar(36) NOT NULL;
-UPDATE photos SET id = UUID();
-ALTER TABLE photos ADD PRIMARY KEY (id);
+ALTER TABLE photos ADD COLUMN id_key varchar(36) NOT NULL;
+UPDATE photos SET id_key = UUID();
+ALTER TABLE photos ADD PRIMARY KEY (id_key);
