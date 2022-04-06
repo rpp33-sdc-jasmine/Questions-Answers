@@ -61,7 +61,6 @@ module.exports= {
       db.query(queryString, (err, data) => {
         if (err) {
           //throw new error
-          console.log('error', err);
           reject('Error Updating Question Helpfulness', err);
         } else {
           resolve(data);
@@ -69,7 +68,20 @@ module.exports= {
       })
     })
   },
-  putReported: (id) => {
+  putReported: (id, table) => {
+    db.connect();
+    let queryString = `UPDATE ${table} SET reported=1 WHERE question_id=${id};`
+
+    return new Promise((resolve, reject) => {
+      db.query(queryString, (err, data) => {
+        if (err) {
+          //throw new error
+          reject('Error Updating Question Reported', err);
+        } else {
+          resolve(data);
+        }
+      })
+    })
   }
 };
 

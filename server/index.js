@@ -49,10 +49,8 @@ app.post('/qa/questions/:question_id/answers', (req, res) => {
 
 app.put('/qa/questions/:question_id/helpful', (req, res) => {
   const id = req.params.question_id;
-  console.log('The question id', id);
   models.putHelpful(id, 'questions')
   .then((result) => {
-    console.log('the result', result);
     res.status(201).send('Success Updating Question Helpfulness');
   })
   .catch(() => {
@@ -62,18 +60,39 @@ app.put('/qa/questions/:question_id/helpful', (req, res) => {
 
 app.put('/qa/answers/:answer_id/helpful', (req, res) => {
   const id = req.params.answer_id;
-  res.status(201).send('Success Updating Answer Helpfulness');
+  console.log('The answer id', id);
+  models.putHelpful(id, 'answers')
+  .then((result) => {
+    res.status(201).send('Success Updating Answer Helpfulness');
+  })
+  .catch(() => {
+    res.status(500).send('Unable To Update Answer Helpfulness');
+  })
 })
 
 app.put('/qa/questions/:question_id/report', (req, res) => {
   const id = req.params.question_id;
-  res.status(201).send('Success Reporting Question');
+  models.putReported(id, 'questions')
+  .then((result) => {
+    console.log('The result', result);
+    res.status(201).send('Success Reporting Question');
+  })
+  .catch(() => {
+    res.status(500).send('Unable To Report Question');
+  })
 })
 
 
 app.put('/qa/answers/:answer_id/report', (req, res) => {
   const id = req.params.answer_id;
-  res.status(201).send('Success Reporting Answer');
+  models.putReported(id, 'answers')
+  .then((result) => {
+    console.log('The result', result);
+    res.status(201).send('Success Reporting Answer');
+  })
+  .catch(() => {
+    res.status(500).send('Unable To Report Answer');
+  })
 })
 
 app.listen(port, () => {
