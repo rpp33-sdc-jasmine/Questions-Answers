@@ -9,17 +9,16 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 app.get('/qa/questions', (req, res) => {
-  const params = {
+  let params = {
     id: req.query.product_id,
     page: req.query.page,
     count: req.query.count
   }
-    res.status(200).send(params);
-});
+  // models.getQuestions(params.id)
+  // .then((data) => {
 
-app.get('/qa/questions/:question_id/answers', (req, res) => {
-  const id = req.params.question_id
-  res.status(200).send(id);
+  // })
+  res.status(200).send('Success Getting Questions');
 });
 
 app.post('/qa/questions', (req, res) => {
@@ -29,7 +28,12 @@ app.post('/qa/questions', (req, res) => {
     email: req.query.email,
     product_id: req.query.product_id
   }
-  res.status(201).send(data);
+  res.status(201).send('Success Posting Question');
+});
+
+app.get('/qa/questions/:question_id/answers', (req, res) => {
+  const id = req.params.question_id
+  res.status(200).send('Success Getting Answers');
 });
 
 app.post('/qa/questions/:question_id/answers', (req, res) => {
@@ -40,26 +44,35 @@ app.post('/qa/questions/:question_id/answers', (req, res) => {
     photos: req.query.photos,
     question_id: req.params.question_id
   }
-  res.status(201).send(data);
+  res.status(201).send('Success Posting Answer');
 });
 
 app.put('/qa/questions/:question_id/helpful', (req, res) => {
-  questionId = req.params.question_id;
-  res.status(201).send('Success Updating Question Helpfulness');
-})
-
-app.put('/qa/questions/:question_id/report', (req, res) => {
-  questionId = req.params.question_id;
-  res.status(201).send('Success Reporting Question');
+  const id = req.params.question_id;
+  console.log('The question id', id);
+  models.putHelpful(id, 'questions')
+  .then((result) => {
+    console.log('the result', result);
+    res.status(201).send('Success Updating Question Helpfulness');
+  })
+  .catch(() => {
+    res.status(500).send('Unable To Update Question Helpfulness');
+  })
 })
 
 app.put('/qa/answers/:answer_id/helpful', (req, res) => {
-  answerId = req.params.answer_id;
+  const id = req.params.answer_id;
   res.status(201).send('Success Updating Answer Helpfulness');
 })
 
+app.put('/qa/questions/:question_id/report', (req, res) => {
+  const id = req.params.question_id;
+  res.status(201).send('Success Reporting Question');
+})
+
+
 app.put('/qa/answers/:answer_id/report', (req, res) => {
-  answerId = req.params.answer_id;
+  const id = req.params.answer_id;
   res.status(201).send('Success Reporting Answer');
 })
 

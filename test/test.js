@@ -24,14 +24,14 @@ describe('Database Setup', () => {
     })
   });
   test('Questions table field "body" is of type varchar', (done) => {
-    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="questions" and column_name="body";'
+    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="questions" and column_name="question_body";'
     dbConnection.query(cols, (err, data) => {
       expect(data[0].DATA_TYPE).toBe('varchar');
       done();
     })
   });
-  test('Questions table field "date_written" is of type int', (done) => {
-    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="questions" and column_name="date_written";'
+  test('Questions table field "question_date" is of type int', (done) => {
+    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="questions" and column_name="question_date";'
     dbConnection.query(cols, (err, data) => {
       expect(data[0].DATA_TYPE).toBe('int');
       done();
@@ -44,10 +44,10 @@ describe('Database Setup', () => {
       done();
     })
   });
-  test('Questions table field "id" is of type varchar', (done) => {
-    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="questions" and column_name="id";'
+  test('Questions table field "question_id" is of type varchar', (done) => {
+    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="questions" and column_name="question_id";'
     dbConnection.query(cols, (err, data) => {
-      expect(data[0].DATA_TYPE).toBe('varchar');
+      expect(data[0].DATA_TYPE).toBe('int');
       done();
     })
   });
@@ -79,15 +79,15 @@ describe('Database Setup', () => {
       done();
     })
   });
-  test('Answers table field "answer_helpfulness" is of type int', (done) => {
-    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="answers" and column_name="answer_helpfulness";'
+  test('Answers table field answer "helpfulness" is of type int', (done) => {
+    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="answers" and column_name="helpfulness";'
     dbConnection.query(cols, (err, data) => {
       expect(data[0].DATA_TYPE).toBe('int');
       done();
     })
   });
-  test('Answers table field "answer_id" is of type int', (done) => {
-    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="answers" and column_name="answer_id";'
+  test('Answers table field "id" is of type int', (done) => {
+    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="answers" and column_name="id";'
     dbConnection.query(cols, (err, data) => {
       expect(data[0].DATA_TYPE).toBe('int');
       done();
@@ -107,17 +107,10 @@ describe('Database Setup', () => {
       done();
     })
   });
-  test('Answers table field "date_written" is of type int', (done) => {
-    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="answers" and column_name="date_written";'
+  test('Answers table field answer "date" is of type int', (done) => {
+    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="answers" and column_name="date";'
     dbConnection.query(cols, (err, data) => {
       expect(data[0].DATA_TYPE).toBe('int');
-      done();
-    })
-  });
-  test('Answers table field "id" is of type varchar', (done) => {
-    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="answers" and column_name="id";'
-    dbConnection.query(cols, (err, data) => {
-      expect(data[0].DATA_TYPE).toBe('varchar');
       done();
     })
   });
@@ -142,10 +135,10 @@ describe('Database Setup', () => {
       done();
     })
   });
-  test('Photos table field "id" is of type varchar', (done) => {
-    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="photos" and column_name="id";'
+  test('Photos table field "photo_id" is of type varchar', (done) => {
+    const cols = 'select * from information_schema.columns where table_schema="questions_answers" and table_name="photos" and column_name="photo_id";'
     dbConnection.query(cols, (err, data) => {
-      expect(data[0].DATA_TYPE).toBe('varchar');
+      expect(data[0].DATA_TYPE).toBe('int');
       done();
     })
   });
