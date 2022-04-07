@@ -21,6 +21,7 @@ CREATE TABLE answers (
   body VARCHAR(1000),
   date INT(11),
   answerer_name VARCHAR(30),
+  email VARCHAR(30),
   helpfulness INT,
   reported BOOLEAN
 );

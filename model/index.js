@@ -1,4 +1,7 @@
 const db = require('../db').dbConnection;
+let question_id = 3518964;
+let answer_id = 6879307;
+let photo_id = 2063760;
 
 module.exports= {
   getQuestions: (id) => {
@@ -48,7 +51,31 @@ module.exports= {
     //   }
     // })
   },
-  postAnswer: (id) => {
+  postAnswer: (data) => {
+    db.connect();
+
+    return new Promise((resolve, reject) => {
+      let answerQueryString = `INSERT INTO answers (id, question_id, body, date, answerer_name, email, helpfulness, reported, id_key) VALUES(${answer_id}, ${data.question_id}, '${data.body}', UNIX_TIMESTAMP(), '${data.name}', '${data.email}', 0, 0, UUID());`;
+      db.query(answerQueryString, (err, answerData) => {
+        if (err) {
+          reject(err);
+        }
+        console.log('answer data', answerData);
+        data.photos.forEach((photo) => {
+          photo = photo.substring(1, photo.length - 1);
+          //need to create a procedure here? to get the last id?
+          let photoQueryString = `INSERT INTO photos (photo_id, answer_id, url, id_key) VALUES(${photo_id}, ${answer_id}, '${photo}', UUID());`;
+          db.query(photoQueryString, (err, photoData) => {
+            if(err) {
+              //delete the answer you just inserted
+              reject(err);
+            }
+            console.log('photodata', photoData)
+          })
+        })
+        resolve('Success Updating Answers and Photos');
+      })
+    })
 
   },
   putHelpful: (id, table) => {
@@ -116,3 +143,26 @@ module.exports= {
 
 
 // SELECT JSON_ARRAY((a.id, a.body, a.date) FROM answers a WHERE a.question_id=1;
+
+
+
+
+
+// answer_id = 6879307;
+// `INSERT INTO answers (id, question_id, body, date, answerer_name, helpfulness, reported, id_key) VALUES(${answer_id}, ${data.question_id}, '${data.body}', UNIX_TIMESTAMP(), '${data.name}', 0, 0, UUID());`;
+// INSERT INTO answers (id, question_id, body, date, answerer_name, helpfulness, reported, id_key) VALUES(6879307, 1, 'some body and stuff', UNIX_TIMESTAMP(), 'caitlin', 0, 0, UUID());
+
+// SELECT * FROM answers WHERE id = 6879308;
+
+// SELECT * FROM answers ORDER BY question_id DESC LIMIT 1;
+
+// SELECT * FROM answers WHERE answerer_name='caiwin';
+
+
+// START TRANSACTION;
+// INSERT INTO answers(id, question_id, body, id_key) VALUES (6879311, 1, 'this is some body added from a transaction', UUID());
+// UPDATE answers SET email = 'caitli@gmail' WHERE id = 6879312;
+// COMMIT;
+
+
+// INSERT INTO photos (photo_id, answer_id, url) VALUES(2063760, 6879307, 'http://www.somephoto.com');

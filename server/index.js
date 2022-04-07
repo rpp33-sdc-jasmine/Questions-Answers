@@ -41,10 +41,17 @@ app.post('/qa/questions/:question_id/answers', (req, res) => {
     body: req.query.body,
     name: req.query.name,
     email: req.query.email,
-    photos: req.query.photos,
+    photos: req.query.photos.substring(1, req.query.photos.length -1).split(','),
     question_id: req.params.question_id
   }
-  res.status(201).send('Success Posting Answer');
+  models.postAnswer(data)
+  .then((result) => {
+    res.status(201).send('Success Posting Answer');
+  })
+  .catch((err) => {
+    console.log(err);
+    res.status(500).send('Unable To Post Answer');
+  })
 });
 
 app.put('/qa/questions/:question_id/helpful', (req, res) => {
@@ -74,7 +81,6 @@ app.put('/qa/questions/:question_id/report', (req, res) => {
   const id = req.params.question_id;
   models.putReported(id, 'questions')
   .then((result) => {
-    console.log('The result', result);
     res.status(201).send('Success Reporting Question');
   })
   .catch(() => {
@@ -87,7 +93,6 @@ app.put('/qa/answers/:answer_id/report', (req, res) => {
   const id = req.params.answer_id;
   models.putReported(id, 'answers')
   .then((result) => {
-    console.log('The result', result);
     res.status(201).send('Success Reporting Answer');
   })
   .catch(() => {
