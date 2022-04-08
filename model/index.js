@@ -3,55 +3,62 @@ let question_id = 3518964;
 let answer_id = 6879307;
 let photo_id = 2063760;
 
-module.exports= {
-  getQuestions: (id) => {
-    db.connect();
-    let questionQuery = `SELECT question_id, question_body, question_date, asker_name, reported, question_helpfulness FROM questions WHERE questions.product_id=${id}`
-    questionQuery = `SELECT JSON_OBJECT('id', a.id, 'body', a.body, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness) AS data FROM answers a WHERE a.question_id=${id};`;
 
+  //NOT DONE
+  const getQuestions = (id) => {
+    // db.connect();
+    // let questionQuery = `SELECT question_id, question_body, question_date, asker_name, reported, question_helpfulness FROM questions WHERE questions.product_id=${id}`
+    // questionQuery = `SELECT JSON_OBJECT('id', a.id, 'body', a.body, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness) AS data FROM answers a WHERE a.question_id=${id};`;
+
+    // return new Promise((resolve, reject) => {
+    //   db.query(questionQuery, (err, rows) => {
+    //     if (err) {
+    //       reject(Error)
+    //       console.log('Error retrieving questions from database', err);
+    //     } else {
+    //       resolve({product_id: id, results: rows})
+    //     }
+    //   })
+    // })
+    // db.end();
+  };
+
+  //DONE EXCEPT FOR WEIRD ARRAY JSON THING
+  const getAnswers = (data) => {
+    db.connect();
+    const answerQuery = `SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id  WHERE question_id=${data.id} GROUP BY a.id;`;
     return new Promise((resolve, reject) => {
-      db.query(questionQuery, (err, rows) => {
+      db.query(answerQuery, (err, results) => {
         if (err) {
-          reject(Error)
-          console.log('Error retrieving questions from database', err);
-        } else {
-          resolve({product_id: id, results: rows})
+          reject(err);
         }
+        resolve(results);
       })
     })
     db.end();
-  },
-  getAnswers: (questions) => {
-    // db.connect();
-    // const answerQuery = `SELECT answers.id, answers.body, answers.date, answers.answerer_name, answers.helpfulness FROM answers WHERE`;
-    // return new Promise((resolve, reject) => {
-    //   resolve(questions.map((question) =>{
-    //     const answerQuery = `SELECT id, body, date, answerer_name, reported, helpfulness FROM answers WHERE question_id=${question.question_id};`;
-    //     db.query(answerQuery, (err, rows) => {
-    //       if (err) {
-    //         console.log('Error retrieving questions from the db', err);
-    //       } else {
-    //         return question.answers = rows;
-    //       }
-    //     });
-    //   }));
-    // })
-    // db.end();
-  },
-  postQuestion: (question, callback) => {
-    //TODO: question ID needs to autoincremented from the last question somehow
-    // const questionFields = 'id, question_id, product_id, body, date_written, asker_name, email';
-    // db.query(`INSERT INTO questions (${questionFields}) VALUES (uuid(), ${question.question_id}, ${question.product_id}, "${question.body}", UNIX_TIMESTAMP(), "${question.asker_name}", "${question.email}")`, (err, data) => {
-    //   if (err) {
-    //       console.log('Error inserting question into db', err);
-    //       callback(err);
-    //   } else {
-    //       console.log('Success inserting data into db', data);
-    //       callback(null, data)
-    //   }
-    // })
-  },
-  postAnswer: (data) => {
+  };
+
+
+  //DONE!
+  const postQuestion = (question) => {
+    // TODO: question ID needs to autoincremented from the last question in a more robust way
+    const questionFields = 'question_id, product_id, question_body, question_date, asker_name, email, id_key';
+    return new Promise((resolve, reject) => {
+      db.query(`INSERT INTO questions (${questionFields}) VALUES (${question_id}, ${question.product_id}, "${question.body}", UNIX_TIMESTAMP(), "${question.asker_name}", "${question.email}", UUID())`, (err, data) => {
+        if (err) {
+            reject(err);
+        } else {
+          question_id++
+          resolve('Success Posting Question');
+        }
+      })
+    })
+  };
+
+  //DONE!
+  const postAnswer = (data) => {
+    // TODO: answer_id needs to be autoincremented from the last question
+    // TODO: If photo insert is not successful, rollback answer insert
     db.connect();
 
     return new Promise((resolve, reject) => {
@@ -60,25 +67,27 @@ module.exports= {
         if (err) {
           reject(err);
         }
-        console.log('answer data', answerData);
-        data.photos.forEach((photo) => {
-          photo = photo.substring(1, photo.length - 1);
-          //need to create a procedure here? to get the last id?
-          let photoQueryString = `INSERT INTO photos (photo_id, answer_id, url, id_key) VALUES(${photo_id}, ${answer_id}, '${photo}', UUID());`;
-          db.query(photoQueryString, (err, photoData) => {
-            if(err) {
-              //delete the answer you just inserted
-              reject(err);
-            }
-            console.log('photodata', photoData)
+        let promises = data.photos.map((photo) => {
+          return new Promise((resolve, reject) => {
+            let photoQueryString = `INSERT INTO photos (photo_id, answer_id, url, id_key) VALUES(${photo_id}, ${answer_id}, '${photo}', UUID());`;
+            db.query(photoQueryString, (err, photoData) => {
+              if(err) {
+                reject(err);
+              }
+              photo_id++;
+              resolve(photoData);
+            })
           })
         })
-        resolve('Success Updating Answers and Photos');
+        answer_id++;
+        resolve('Success Posting Answer');
       })
     })
+    db.end();
+  };
 
-  },
-  putHelpful: (id, table) => {
+  //DONE!
+  const putHelpful = (id, table) => {
     db.connect();
     let helpfulness;
     table === 'questions' ? helpfulness = 'question_helpfulness' : helpfulness = 'helpfulness';
@@ -87,30 +96,39 @@ module.exports= {
     return new Promise((resolve, reject) => {
       db.query(queryString, (err, data) => {
         if (err) {
-          //throw new error
-          reject('Error Updating Question Helpfulness', err);
+          reject(err);
         } else {
           resolve(data);
         }
       })
     })
-  },
-  putReported: (id, table) => {
+  };
+
+  //DONE
+  const putReported = (id, table) => {
     db.connect();
     let queryString = `UPDATE ${table} SET reported=1 WHERE question_id=${id};`
 
     return new Promise((resolve, reject) => {
       db.query(queryString, (err, data) => {
         if (err) {
-          //throw new error
-          reject('Error Updating Question Reported', err);
+          reject(err);
         } else {
           resolve(data);
         }
       })
     })
-  }
-};
+  };
+
+  module.exports = {
+    getQuestions,
+     getAnswers,
+     postQuestion,
+     postAnswer,
+     putHelpful,
+     putReported
+  };
+
 
 // ************************Pre Optimization**************************
 
@@ -166,3 +184,17 @@ module.exports= {
 
 
 // INSERT INTO photos (photo_id, answer_id, url) VALUES(2063760, 6879307, 'http://www.somephoto.com');
+
+// SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE answer_id=5;
+
+
+
+//THIS IS A KEEPER BUT I need to figure out how to return the answer data even if there are no photos
+// SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id  WHERE question_id=1 GROUP BY a.id;
+
+
+// SELECT * from ANSWERS WHERE question_id=1;
+
+// SELECT * from PHOTOS WHERE answer_id=6879307;
+
+
