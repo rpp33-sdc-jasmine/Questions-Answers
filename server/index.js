@@ -1,7 +1,7 @@
 const express = require('express');
 const models = require('../model/index.js');
 const bodyParser = require('body-parser');
-const utils = require('./utils.js')
+const utils = require('../utils.js')
 const port = 4000;
 
 

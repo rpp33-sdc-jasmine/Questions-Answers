@@ -1,4 +1,5 @@
 const db = require('../db').dbConnection;
+const utils = require('../utils.js');
 let question_id = 3518964;
 let answer_id = 6879307;
 let photo_id = 2063760;
