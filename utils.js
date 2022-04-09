@@ -12,6 +12,18 @@ const transformPhotosFromClient = (photos) => {
   });
 }
 
+const transformQuestionsAnswersFromDatabase = (questons, answers) => {
+  //for each questions I need to find the corresponding answer (will have question_id)
+  //I need to add
+  return [questions, answers];
+
+};
+
+const transformPhotosFromDatabase = (photos) => {
+
+};
+
 module.exports = {
-  transformPhotosFromClient
+  transformPhotosFromClient,
+  transformQuestionsAnswersFromDatabase
 }

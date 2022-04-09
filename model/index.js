@@ -27,7 +27,6 @@ const getQuestions = (id) => {
   //DONE EXCEPT FOR WEIRD ARRAY JSON THING
   const getAnswers = (data) => {
     // db.connect();
-    console.log('the question id should be 1', data);
     const answerQuery = `SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id  WHERE question_id=${data} GROUP BY a.id;`;
     return new Promise((resolve, reject) => {
       db.query(answerQuery, (err, data) => {
