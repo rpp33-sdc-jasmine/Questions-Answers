@@ -4,10 +4,11 @@ let question_id = 3518964;
 let answer_id = 6879307;
 let photo_id = 2063760;
 
+//TODO: Pooling connections
+db.connect()
 
-//NOT DONE
+//DONE EXCEPT FOR WEIRD ARRAY JSON THING
 const getQuestions = (id) => {
-    db.connect();
     const questionQuery = `SELECT question_id, question_body, question_date, asker_name, reported, question_helpfulness FROM questions WHERE questions.product_id=${id}`;
     // const answerQuery = `SELECT JSON_OBJECT('id', a.id, 'body', a.body, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness) AS data FROM answers a WHERE a.question_id=${id};`;
 
@@ -21,12 +22,11 @@ const getQuestions = (id) => {
         }
       })
     })
-    // db.end();
   };
 
   //DONE EXCEPT FOR WEIRD ARRAY JSON THING
   const getAnswers = (data) => {
-    // db.connect();
+    //TODO If an answer is reported it should not be returned
     const answerQuery = `SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id  WHERE question_id=${data} GROUP BY a.id;`;
     return new Promise((resolve, reject) => {
       db.query(answerQuery, (err, data) => {
@@ -36,7 +36,6 @@ const getQuestions = (id) => {
         resolve(data);
       })
     })
-    // db.end();
   };
 
 
@@ -54,15 +53,12 @@ const getQuestions = (id) => {
         }
       })
     })
-    db.end()
   };
 
   //DONE!
   const postAnswer = (data) => {
     // TODO: answer_id needs to be autoincremented from the last question
     // TODO: If photo insert is not successful, rollback answer insert
-    db.connect();
-
     return new Promise((resolve, reject) => {
       let answerQueryString = `INSERT INTO answers (id, question_id, body, date, answerer_name, email, helpfulness, reported, id_key) VALUES(${answer_id}, ${data.question_id}, '${data.body}', UNIX_TIMESTAMP(), '${data.name}', '${data.email}', 0, 0, UUID());`;
       db.query(answerQueryString, (err, answerData) => {
@@ -85,12 +81,10 @@ const getQuestions = (id) => {
         resolve('Success Posting Answer');
       })
     })
-    db.end();
   };
 
   //DONE!
   const putHelpful = (id, table) => {
-    db.connect();
     let helpfulness;
     table === 'questions' ? helpfulness = 'question_helpfulness' : helpfulness = 'helpfulness';
     let queryString = `UPDATE ${table} SET ${helpfulness} = ${helpfulness} + 1 WHERE question_id=${id};`
@@ -104,12 +98,10 @@ const getQuestions = (id) => {
         }
       })
     })
-    db.end();
   };
 
   //DONE
   const putReported = (id, table) => {
-    db.connect();
     let queryString = `UPDATE ${table} SET reported=1 WHERE question_id=${id};`
 
     return new Promise((resolve, reject) => {
@@ -121,7 +113,6 @@ const getQuestions = (id) => {
         }
       })
     })
-    db.end();
   };
 
   module.exports = {
