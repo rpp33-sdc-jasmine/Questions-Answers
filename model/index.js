@@ -5,38 +5,39 @@ let answer_id = 6879307;
 let photo_id = 2063760;
 
 
-  //NOT DONE
-  const getQuestions = (id) => {
-    // db.connect();
-    // let questionQuery = `SELECT question_id, question_body, question_date, asker_name, reported, question_helpfulness FROM questions WHERE questions.product_id=${id}`
-    // questionQuery = `SELECT JSON_OBJECT('id', a.id, 'body', a.body, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness) AS data FROM answers a WHERE a.question_id=${id};`;
+//NOT DONE
+const getQuestions = (id) => {
+    db.connect();
+    const questionQuery = `SELECT question_id, question_body, question_date, asker_name, reported, question_helpfulness FROM questions WHERE questions.product_id=${id}`;
+    // const answerQuery = `SELECT JSON_OBJECT('id', a.id, 'body', a.body, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness) AS data FROM answers a WHERE a.question_id=${id};`;
 
-    // return new Promise((resolve, reject) => {
-    //   db.query(questionQuery, (err, rows) => {
-    //     if (err) {
-    //       reject(Error)
-    //       console.log('Error retrieving questions from database', err);
-    //     } else {
-    //       resolve({product_id: id, results: rows})
-    //     }
-    //   })
-    // })
+    return new Promise((resolve, reject) => {
+      db.query(questionQuery, (err, data) => {
+        if (err) {
+          reject(Error)
+          console.log(err);
+        } else {
+          resolve({product_id: id, results: data})
+        }
+      })
+    })
     // db.end();
   };
 
   //DONE EXCEPT FOR WEIRD ARRAY JSON THING
   const getAnswers = (data) => {
-    db.connect();
-    const answerQuery = `SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id  WHERE question_id=${data.id} GROUP BY a.id;`;
+    // db.connect();
+    console.log('the question id should be 1', data);
+    const answerQuery = `SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id  WHERE question_id=${data} GROUP BY a.id;`;
     return new Promise((resolve, reject) => {
-      db.query(answerQuery, (err, results) => {
+      db.query(answerQuery, (err, data) => {
         if (err) {
           reject(err);
         }
-        resolve(results);
+        resolve(data);
       })
     })
-    db.end();
+    // db.end();
   };
 
 
@@ -54,6 +55,7 @@ let photo_id = 2063760;
         }
       })
     })
+    db.end()
   };
 
   //DONE!
@@ -99,10 +101,11 @@ let photo_id = 2063760;
         if (err) {
           reject(err);
         } else {
-          resolve(data);
+          resolve('Success Updating Helpfulness');
         }
       })
     })
+    db.end();
   };
 
   //DONE
@@ -115,10 +118,11 @@ let photo_id = 2063760;
         if (err) {
           reject(err);
         } else {
-          resolve(data);
+          resolve('Success Reporting');
         }
       })
     })
+    db.end();
   };
 
   module.exports = {
@@ -192,6 +196,7 @@ let photo_id = 2063760;
 
 //THIS IS A KEEPER BUT I need to figure out how to return the answer data even if there are no photos
 // SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id  WHERE question_id=1 GROUP BY a.id;
+// SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id WHERE question_id=1 GROUP BY a.id;
 
 
 // SELECT * from ANSWERS WHERE question_id=1;

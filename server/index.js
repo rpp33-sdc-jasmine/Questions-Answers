@@ -10,7 +10,7 @@ const makeApp = function(models) {
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
 
-  //NOT DONE!
+  //ALMOST DONE!
   app.get('/qa/questions', (req, res) => {
     const params = {
       id: req.query.product_id,
@@ -18,10 +18,23 @@ const makeApp = function(models) {
       count: req.query.count
     };
     models.getQuestions(params.id)
-    .then((result) => {
-      //TODO: Send result
-      res.status(200).send(result);
+    .then((questions) => {
+     questions = questions.results;
+     let promises = questions.map((question) => {
+        return models.getAnswers(question.question_id);
+     })
+     Promise.all(promises)
+     .then((answers) => {
+       //need to create a utility function to do some data manipulation at this point
+       res.status(200).send(answers);
+      })
+      .catch((err) => {
+        res.status(500).send(err);
+      })
     })
+    // .then((result) => {
+    //   console.log('should be something', result);
+    // })
     .catch((err) => {
       console.log(err);
       res.status(500).send(err);
