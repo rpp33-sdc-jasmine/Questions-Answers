@@ -13,14 +13,12 @@ const transformPhotosFromClient = (photos) => {
 }
 
 const transformQuestionsAnswersFromDatabase = (questons, answers) => {
-  //for each questions I need to find the corresponding answer (will have question_id)
-  //I need to add
-  return [questions, answers];
+  //I deally logic in get route for questions will go here
 
 };
 
 const transformPhotosFromDatabase = (photos) => {
-
+//if I need to transform weird json things from database
 };
 
 module.exports = {
