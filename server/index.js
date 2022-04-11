@@ -10,7 +10,6 @@ const makeApp = function(models) {
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
 
-  //DONE EXCEPT FOR WEIRD ARRAY JSON THING
   app.get('/qa/questions', (req, res) => {
     const params = {
       id: req.query.product_id,
@@ -27,14 +26,16 @@ const makeApp = function(models) {
      .then((answers) => {
        answers = answers[0];
        questions.forEach(question => {
+         question.date = new Date(question.date);
+         question.reported = question.reported === 1;
          question.answers = {};
          answers.forEach(answer => {
            if (answer.question_id === question.question_id) {
              question.answers[answer.id] = {
                id: answer.id,
                body: answer.body,
-               date: answer.date, a
-               nswerer_name: answer.answerer_name,
+               date: answer.date,
+               answerer_name: answer.answerer_name,
                helpfulness: answer.helpfulness,
                photos: answer.photos };
            }
@@ -52,7 +53,6 @@ const makeApp = function(models) {
     })
   });
 
-  //DONE!
   app.post('/qa/questions', (req, res) => {
     const params = {
       body: req.query.body,
@@ -70,7 +70,6 @@ const makeApp = function(models) {
     })
   });
 
-  //DONE EXCEPT FOR WEIRD ARRAY JSON THING
   app.get('/qa/questions/:question_id/answers', (req, res) => {
     const params = {
       id: req.params.question_id,
@@ -86,7 +85,6 @@ const makeApp = function(models) {
     })
   });
 
-  //DONE!
   app.post('/qa/questions/:question_id/answers', (req, res) => {
     const params = {
       body: req.query.body,
@@ -105,7 +103,6 @@ const makeApp = function(models) {
     })
   });
 
-  //DONE!
   app.put('/qa/questions/:question_id/helpful', (req, res) => {
     const id = req.params.question_id;
     models.putHelpful(id, 'questions')
@@ -117,7 +114,6 @@ const makeApp = function(models) {
     })
   })
 
-  //DONE!
   app.put('/qa/answers/:answer_id/helpful', (req, res) => {
     const id = req.params.answer_id;
     console.log('The answer id', id);
@@ -130,7 +126,6 @@ const makeApp = function(models) {
     })
   })
 
-  //DONE!
   app.put('/qa/questions/:question_id/report', (req, res) => {
     const id = req.params.question_id;
     models.putReported(id, 'questions')
@@ -142,7 +137,6 @@ const makeApp = function(models) {
     })
   })
 
-  //DONE!
   app.put('/qa/answers/:answer_id/report', (req, res) => {
     const id = req.params.answer_id;
     models.putReported(id, 'answers')

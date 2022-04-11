@@ -12,16 +12,15 @@ const transformPhotosFromClient = (photos) => {
   });
 }
 
-const transformQuestionsAnswersFromDatabase = (questons, answers) => {
-  //I deally logic in get route for questions will go here
+// const transformQuestionsAnswersFromDatabase = (questons, answers) => {
+//   //I deally logic in get route for questions will go here
 
-};
+// };
 
-const transformPhotosFromDatabase = (photos) => {
-//if I need to transform weird json things from database
-};
+// const transformPhotosFromDatabase = (photos) => {
+// //if I need to transform weird json things from database
+// };
 
 module.exports = {
-  transformPhotosFromClient,
-  transformQuestionsAnswersFromDatabase
+  transformPhotosFromClient
 }

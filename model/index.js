@@ -7,11 +7,8 @@ let photo_id = 2063760;
 //TODO: Pooling connections
 db.connect()
 
-//DONE EXCEPT FOR WEIRD ARRAY JSON THING
 const getQuestions = (id) => {
     const questionQuery = `SELECT question_id, question_body, question_date, asker_name, reported, question_helpfulness FROM questions WHERE questions.product_id=${id}`;
-    // const answerQuery = `SELECT JSON_OBJECT('id', a.id, 'body', a.body, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness) AS data FROM answers a WHERE a.question_id=${id};`;
-
     return new Promise((resolve, reject) => {
       db.query(questionQuery, (err, data) => {
         if (err) {
@@ -24,10 +21,9 @@ const getQuestions = (id) => {
     })
   };
 
-  //DONE EXCEPT FOR WEIRD ARRAY JSON THING
   const getAnswers = (data) => {
     //TODO If an answer is reported it should not be returned
-    const answerQuery = `SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id  WHERE question_id=${data} GROUP BY a.id;`;
+    const answerQuery = `SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id  WHERE question_id=${data} AND a.reported=0 GROUP BY a.id;`;
     return new Promise((resolve, reject) => {
       db.query(answerQuery, (err, data) => {
         if (err) {
@@ -39,9 +35,8 @@ const getQuestions = (id) => {
   };
 
 
-  //DONE!
   const postQuestion = (question) => {
-    // TODO: question ID needs to autoincremented from the last question in a more robust way
+    // // TODO: question ID needs to autoincremented from the last question in a more robust way
     const questionFields = 'question_id, product_id, question_body, question_date, asker_name, email, id_key';
     return new Promise((resolve, reject) => {
       db.query(`INSERT INTO questions (${questionFields}) VALUES (${question_id}, ${question.product_id}, "${question.body}", UNIX_TIMESTAMP(), "${question.asker_name}", "${question.email}", UUID())`, (err, data) => {
@@ -55,10 +50,9 @@ const getQuestions = (id) => {
     })
   };
 
-  //DONE!
   const postAnswer = (data) => {
-    // TODO: answer_id needs to be autoincremented from the last question
-    // TODO: If photo insert is not successful, rollback answer insert
+    // // TODO: answer_id needs to be autoincremented from the last question
+    // // TODO: If photo insert is not successful, rollback answer insert
     return new Promise((resolve, reject) => {
       let answerQueryString = `INSERT INTO answers (id, question_id, body, date, answerer_name, email, helpfulness, reported, id_key) VALUES(${answer_id}, ${data.question_id}, '${data.body}', UNIX_TIMESTAMP(), '${data.name}', '${data.email}', 0, 0, UUID());`;
       db.query(answerQueryString, (err, answerData) => {
@@ -83,7 +77,6 @@ const getQuestions = (id) => {
     })
   };
 
-  //DONE!
   const putHelpful = (id, table) => {
     let helpfulness;
     table === 'questions' ? helpfulness = 'question_helpfulness' : helpfulness = 'helpfulness';
@@ -100,7 +93,6 @@ const getQuestions = (id) => {
     })
   };
 
-  //DONE
   const putReported = (id, table) => {
     let queryString = `UPDATE ${table} SET reported=1 WHERE question_id=${id};`
 
@@ -127,22 +119,32 @@ const getQuestions = (id) => {
 
 // ************************Pre Optimization**************************
 
-//Original Queries
-//Questions Only
+//GET Questions Only
 //SELECT question_id, question_body, question_date, asker_name, reported, question_helpfulness FROM questions WHERE questions.product_id=1;
 
-//Answers Only
+//POST Question
+//INSERT INTO questions question_id, product_id, question_body, question_date, asker_name, email, id_key VALUES (6879307, 1, "the body", UNIX_TIMESTAMP(), "myName", "my@name.com", UUID())
 
-//Photos Only
+//GET Answers Only
 
-//Questions and Answers
-//SELECT questions.question_id, questions.question_body, questions.question_date, questions.asker_name, questions.reported, questions.question_helpfulness, answers.id, answers.body, answers.date, answers.answerer_name, answers.helpfulness FROM questions INNER JOIN answers ON answers.question_id = questions.question_id AND questions.product_id=1;
+//POST Answer
 
-//Questions Answers and Photos
+//GET Photos Only
 
-// ************************Post Optimization**************************
+//PUT Helpfulness
 
-//Optimized Queries using JSON Options
+//PUT Reported
+
+// ************************Mid Optimization**************************
+
+//GET Questions Only (combine with separate query to stitch togethher Answers and Photos)
+
+//GET Answers and Photos
+// SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id  WHERE question_id=1 AND a.reported=0 GROUP BY a.id;
+
+// ************************Complete Optimization**************************
+
+//Questions
 // select json_object('id',p.id,'desc',p.`desc`,'child_objects',(select CAST(CONCAT('[', GROUP_CONCAT(JSON_OBJECT('id',id,'parent_id',parent_id,'desc',`desc`)),']')AS JSON) from child_table where parent_id = p.id)) from parent_table p;
 
 // SELECT JSON_OBJECTAGG(question_id, asker_name) FROM questions WHERE product_id=1;
@@ -183,14 +185,5 @@ const getQuestions = (id) => {
 // SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE answer_id=5;
 
 
-
-//THIS IS A KEEPER BUT I need to figure out how to return the answer data even if there are no photos
-// SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id  WHERE question_id=1 GROUP BY a.id;
-// SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id WHERE question_id=1 GROUP BY a.id;
-
-
-// SELECT * from ANSWERS WHERE question_id=1;
-
-// SELECT * from PHOTOS WHERE answer_id=6879307;
 
 
