@@ -58,6 +58,7 @@ ALTER TABLE answers ADD PRIMARY KEY (id_key);
 LOAD DATA LOCAL INFILE '/Users/caitlinwinters/Desktop/Questions-Answers-Data/answers_photos.csv'
 INTO TABLE photos
 FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '\"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 

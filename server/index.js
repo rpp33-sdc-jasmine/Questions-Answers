@@ -5,7 +5,6 @@ const models = require('../model/index.js');
 const utils = require('../utils.js')
 const port = 4000;
 
-
 const makeApp = function(models) {
   const app = express();
   app.use(cors());
@@ -43,7 +42,7 @@ const makeApp = function(models) {
            }
          })
        })
-       res.status(200).send({ product_id: 1, results: questions });
+       res.status(200).send({ product_id: params.id, results: questions });
       })
       .catch((err) => {
         res.status(500).send(err);
