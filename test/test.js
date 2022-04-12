@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 const dbConnection = require('../db/index.js').dbConnection;
-// const models = require('../model/index.js');
+const models = require('../model/index.js');
 const request = require('supertest');
 const makeApp= require('../server/index.js');
 
@@ -155,26 +155,26 @@ describe('Database Setup', () => {
 
 /**************************************** Model Unit Tests *********************************************/
 
-// describe('Database Model Methods Exist', () => {
-//   test('getQuestions is a function', () => {
-//     expect(models.getQuestions).toBeInstanceOf(Function);
-//   });
-//   test('postQuestion is a function', () => {
-//     expect(models.postQuestion).toBeInstanceOf(Function);
-//   });
-//   test('getAnswers is a function', () => {
-//     expect(models.getAnswers).toBeInstanceOf(Function);
-//   });
-//   test('postAnswer is a function', () => {
-//     expect(models.postAnswer).toBeInstanceOf(Function);
-//   });
-//   test('putHelpful is a function', () => {
-//     expect(models.putHelpful).toBeInstanceOf(Function);
-//   });
-//   test('putReported is a function', () => {
-//     expect(models.putReported).toBeInstanceOf(Function);
-//   });
-// });
+describe('Database Model Methods Exist', () => {
+  test('getQuestions is a function', () => {
+    expect(models.getQuestions).toBeInstanceOf(Function);
+  });
+  test('postQuestion is a function', () => {
+    expect(models.postQuestion).toBeInstanceOf(Function);
+  });
+  test('getAnswers is a function', () => {
+    expect(models.getAnswers).toBeInstanceOf(Function);
+  });
+  test('postAnswer is a function', () => {
+    expect(models.postAnswer).toBeInstanceOf(Function);
+  });
+  test('putHelpful is a function', () => {
+    expect(models.putHelpful).toBeInstanceOf(Function);
+  });
+  test('putReported is a function', () => {
+    expect(models.putReported).toBeInstanceOf(Function);
+  });
+});
 
 /**************************************** API Testing *********************************************/
 const getQuestions = jest.fn();
@@ -200,8 +200,8 @@ describe('API Routes Produce Expected Status Codes and Responses', () => {
       if (err) throw err;
       expect(res.text).toBe('Success Getting Questions');
       done(err);
-    })
-  })
+    });
+  });
   test('/qa/questions POST request responds with status of 201 and correct response message', (done) => {
     request(server)
     .post('/qa/questions')
@@ -215,60 +215,39 @@ describe('API Routes Produce Expected Status Codes and Responses', () => {
       if (err) throw err;
       expect(res.statusCode).toBe(201);
       expect(res.text).toBe('Success Posting Question');
-      return done();
+      done();
     });
   });
   test('/qa/questions/:question_id/answers GET request responds with status of 200 and correct response message', (done) => {
     const id = 1;
     request(server)
-    .get(`qa/questions/${id}/answers`)
-    .end(function(err, res) {
-      if (err) throw err;
-      expect(res.statusCode).toBe(200);
-      expect(res.text).toBe('Success Getting Answers');
-      return done();
-    });
+    .get('/qa/questions/' + id + '/answers')
+    .expect(200, done);
   });
   test('/qa/questions/:question_id/helpful PUT request responds with status of 201 and correct response message', (done) => {
+    const id = 1;
     request(server)
-    .get('/qa/questions/:question_id/answers')
-    .end(function(err, res) {
-      if (err) throw err;
-      expect(res.statusCode).toBe(201);
-      expect(res.text).toBe('Success Updating Helpfulness');
-      return done();
-    });
+    .put('/qa/questions/' + id + '/helpful')
+    .expect(201, done);
   });
   test('/qa/questions/:question_id/report PUT request responds with status of 201 and correct response message', (done) => {
+    const id = 1;
     request(server)
-    .get('/qa/questions/:question_id/report')
-    .end(function(err, res) {
-      if (err) throw err;
-      expect(res.statusCode).toBe(201);
-      expect(res.text).toBe('Success Reporting');
-      return done();
-    });
+    .put('/qa/questions/' + id + '/report')
+    .expect(201, done);
+
   });
   test('/qa/answers/:answer_id/helpful PUT request responds with status of 201 and correct response message', (done) => {
+    const id = 1;
     request(server)
-    .get('/qa/answers/:answer_id/helpful')
-    .end(function(err, res) {
-      if (err) throw err;
-      expect(res.statusCode).toBe(201);
-      expect(res.text).toBe('Success Updating Helpfulness');
-      return done();
-    });
-  });
+    .put('/qa/answers/' + id + '/helpful')
+    .expect(201, done);
+  })
   test('/qa/answers/:answer_id/report PUT request responds with status of 201 and correct response message', (done) => {
+    const id = 1;
     request(server)
-    .get('/qa/answers/:answer_id/report')
-    .end(function(err, res) {
-      if (err) throw err;
-      expect(res.statusCode).toBe(201);
-      expect(getAnswers.mock.calls.length).toBe(1);
-      expect(res.text).toBe('Success Reporting');
-      return done();
-    });
+    .put('/qa/answers/' + id + '/report')
+    .expect(201, done);
   });
 });
 

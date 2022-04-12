@@ -1,12 +1,14 @@
 const express = require('express');
-const models = require('../model/index.js');
 const bodyParser = require('body-parser');
+const cors = require('cors');
+const models = require('../model/index.js');
 const utils = require('../utils.js')
 const port = 4000;
 
 
 const makeApp = function(models) {
   const app = express();
+  app.use(cors());
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
 
@@ -20,13 +22,13 @@ const makeApp = function(models) {
     .then((questions) => {
      questions = questions.results;
      let promises = questions.map((question) => {
-        return models.getAnswers(question.question_id);
+        return models.getAnswers(question);
      })
      Promise.all(promises)
      .then((answers) => {
        answers = answers[0];
        questions.forEach(question => {
-         question.date = new Date(question.date);
+         question.question_date = new Date(question.question_date * 1000);
          question.reported = question.reported === 1;
          question.answers = {};
          answers.forEach(answer => {
@@ -34,7 +36,7 @@ const makeApp = function(models) {
              question.answers[answer.id] = {
                id: answer.id,
                body: answer.body,
-               date: answer.date,
+               date: new Date(answer.date * 1000),
                answerer_name: answer.answerer_name,
                helpfulness: answer.helpfulness,
                photos: answer.photos };
@@ -72,13 +74,18 @@ const makeApp = function(models) {
 
   app.get('/qa/questions/:question_id/answers', (req, res) => {
     const params = {
-      id: req.params.question_id,
+      question_id: req.params.question_id,
       page: req.query.page || 1,
       count: req.query.count || 5
     }
     models.getAnswers(params)
     .then((results) => {
-      res.status(200).send({ question: data.id, page: data.page, count: data.count, results });
+      results.forEach((answer) => {
+        console.log('an answer', answer);
+        delete answer.question_id
+        answer.date = new Date(answer.date * 1000);
+      })
+      res.status(200).send({ question: params.question_id, page: params.page, count: params.count, results });
     })
     .catch((err) => {
       res.status(500).send(err);
@@ -116,7 +123,6 @@ const makeApp = function(models) {
 
   app.put('/qa/answers/:answer_id/helpful', (req, res) => {
     const id = req.params.answer_id;
-    console.log('The answer id', id);
     models.putHelpful(id, 'answers')
     .then((result) => {
       res.status(201).send(result);
