@@ -80,7 +80,6 @@ const makeApp = function(models) {
     models.getAnswers(params)
     .then((results) => {
       results.forEach((answer) => {
-        console.log('an answer', answer);
         delete answer.question_id
         answer.date = new Date(answer.date * 1000);
       })
