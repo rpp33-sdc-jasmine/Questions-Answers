@@ -39,7 +39,6 @@ const getQuestions = (id) => {
         if (err) {
             reject(err);
         } else {
-          question_id++
           resolve('Success Posting Question');
         }
       })
