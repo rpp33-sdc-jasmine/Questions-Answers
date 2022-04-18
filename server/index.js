@@ -132,7 +132,7 @@ const makeApp = function(models) {
 
   app.put('/qa/questions/:question_id/report', (req, res) => {
     const id = req.params.question_id;
-    models.putReported(id, 'questions')
+    models.putQuestionReported(id)
     .then((result) => {
       res.status(201).send(result);
     })
@@ -143,7 +143,7 @@ const makeApp = function(models) {
 
   app.put('/qa/answers/:answer_id/report', (req, res) => {
     const id = req.params.answer_id;
-    models.putReported(id, 'answers')
+    models.putAnswerReported(id)
     .then((result) => {
       res.status(201).send(result);
     })

@@ -1,8 +1,5 @@
 const db = require('../db').dbConnection;
 const utils = require('../utils.js');
-let question_id = 3518966;
-let answer_id = 6879309;
-let photo_id = 2063760;
 
 //TODO: Pooling connections
 db.connect()
@@ -34,12 +31,11 @@ const getQuestions = (id) => {
     })
   };
 
-
   const postQuestion = (question) => {
     // TODO: question ID needs to autoincremented from the last question in a more robust way
-    const questionFields = 'question_id, product_id, question_body, question_date, asker_name, email, question_helpfulness, reported, id_key';
+    const questionFields = 'product_id, question_body, question_date, asker_name, email, question_helpfulness, reported';
     return new Promise((resolve, reject) => {
-      db.query(`INSERT INTO questions (${questionFields}) VALUES (${question_id}, ${question.product_id}, "${question.body}", UNIX_TIMESTAMP(), "${question.name}", "${question.email}", 0, 0, UUID())`, (err, data) => {
+      db.query(`INSERT INTO questions (${questionFields}) VALUES (${question.product_id}, "${question.body}", UNIX_TIMESTAMP(), "${question.name}", "${question.email}", 0, 0);`, (err, data) => {
         if (err) {
             reject(err);
         } else {
@@ -51,27 +47,25 @@ const getQuestions = (id) => {
   };
 
   const postAnswer = (data) => {
-    // TODO: answer_id needs to be autoincremented from the last question
     // TODO: If photo insert is not successful, rollback answer insert
     return new Promise((resolve, reject) => {
-      let answerQueryString = `INSERT INTO answers (id, question_id, body, date, answerer_name, email, helpfulness, reported, id_key) VALUES(${answer_id}, ${data.question_id}, '${data.body}', UNIX_TIMESTAMP(), '${data.name}', '${data.email}', 0, 0, UUID());`;
+      let answerQueryString = `INSERT INTO answers (question_id, body, date, answerer_name, email, helpfulness, reported) VALUES(${data.question_id}, '${data.body}', UNIX_TIMESTAMP(), '${data.name}', '${data.email}', 0, 0);`;
       db.query(answerQueryString, (err, answerData) => {
         if (err) {
           reject(err);
         }
+        let answer_id=answerData.insertId;
         let promises = data.photos.map((photo) => {
           return new Promise((resolve, reject) => {
-            let photoQueryString = `INSERT INTO photos (photo_id, answer_id, url, id_key) VALUES(${photo_id}, ${answer_id}, '${photo}', UUID());`;
+            let photoQueryString = `INSERT INTO photos (answer_id, url) VALUES(${answer_id}, '${photo}');`;
             db.query(photoQueryString, (err, photoData) => {
               if(err) {
                 reject(err);
               }
-              photo_id++;
               resolve(photoData);
             })
           })
         })
-        answer_id++;
         resolve('Success Posting Answer');
       })
     })
@@ -99,17 +93,29 @@ const getQuestions = (id) => {
     })
   };
 
-  const putReported = (id, table) => {
-    let idType;
-    table === 'answers' ? idType = 'id' : idType = 'question_id'
-    let queryString = `UPDATE ${table} SET reported=1 WHERE ${idType}=${id};`
+  const putQuestionReported = (id) => {
+    let queryString = `UPDATE questions SET reported = reported + 1 WHERE question_id=${id};`
 
     return new Promise((resolve, reject) => {
       db.query(queryString, (err, data) => {
         if (err) {
           reject(err);
         } else {
-          resolve('Success Reporting');
+          resolve('Success Reporting Question');
+        }
+      })
+    })
+  };
+
+  const putAnswerReported = (id) => {
+    let queryString = `UPDATE answers SET reported = reported + 1 WHERE id=${id};`
+
+    return new Promise((resolve, reject) => {
+      db.query(queryString, (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve('Success Reporting Answer');
         }
       })
     })
@@ -121,7 +127,8 @@ const getQuestions = (id) => {
      postQuestion,
      postAnswer,
      putHelpful,
-     putReported
+     putQuestionReported,
+     putAnswerReported
   };
 
 
@@ -162,5 +169,6 @@ const getQuestions = (id) => {
 
 
 // SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id WHERE a.question_id=84 GROUP BY a.id;
-
+// //EXPLAIN ANALYZE
+// SELECT question_id, question_body, question_date, asker_name, reported, question_helpfulness FROM questions WHERE product_id=1;
 // SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a LEFT JOIN photos p ON a.id=p.answer_id  WHERE a.question_id=1 GROUP BY a.id;
