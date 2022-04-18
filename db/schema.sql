@@ -13,7 +13,7 @@ CREATE TABLE questions (
   asker_name VARCHAR(30),
   email VARCHAR(50),
   question_helpfulness INT,
-  reported BOOLEAN,
+  reported INT,
   PRIMARY KEY (question_id)
 );
 
@@ -27,7 +27,7 @@ CREATE TABLE answers (
   answerer_name VARCHAR(30),
   email VARCHAR(30),
   helpfulness INT,
-  reported BOOLEAN,
+  reported INT,
   PRIMARY KEY (id)
 );
 
