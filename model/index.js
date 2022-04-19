@@ -5,7 +5,8 @@ const utils = require('../utils.js');
 db.connect()
 
 const getQuestions = (id) => {
-    const questionQuery = `SELECT question_id, question_body, question_date, asker_name, reported, question_helpfulness FROM questions WHERE product_id=${id}`;
+    // const questionQuery = `SELECT question_id, question_body, question_date, asker_name, reported, question_helpfulness FROM questions WHERE product_id=${id}`;
+    const questionQuery = `SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p LEFT JOIN answers a ON p.answer_id=a.id LEFT JOIN questions q on a.question_id=q.question_id WHERE q.product_id=${id}))) AS answers FROM answers a INNER JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=${id};`
     return new Promise((resolve, reject) => {
       db.query(questionQuery, (err, data) => {
         if (err) {
@@ -157,17 +158,19 @@ const getQuestions = (id) => {
 // 5. SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(a.body) AS photos FROM answers a WHERE a.id=5 GROUP BY a.id))) AS answers FROM questions q INNER JOIN answers a ON q.question_id=a.question_id WHERE product_id=1 GROUP BY q.question_id;
 
 
+//Need to join where answer_id = the question_id where product_id = input
+// 6. SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) AS photos FROM answers a LEFT JOIN photos p ON a.id=p.answer_id WHERE a.id=5 GROUP BY a.id))) AS answers FROM questions q INNER JOIN answers a ON q.question_id=a.question_id WHERE product_id=1 GROUP BY q.question_id;
 
-// 6. SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id WHERE a.id=5 GROUP BY a.id))) AS answers FROM questions q INNER JOIN answers a ON q.question_id=a.question_id WHERE product_id=1 GROUP BY q.question_id;
-
-//Error Subquery returns more than 1 row
-// SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) AS photos FROM answers a LEFT JOIN photos p ON a.id=p.answer_id LEFT JOIN questions q ON a.question_id=q.question_id GROUP BY a.id))) AS answers FROM questions q INNER JOIN answers a ON q.question_id=a.question_id WHERE product_id=1 GROUP BY q.question_id;
-
-
+//ROAD BLOCK Error Subquery returns more than 1 row
+// SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) AS photos FROM answers a LEFT JOIN photos p ON a.id=p.answer_id WHERE a.id=5 GROUP BY a.id))) AS answers FROM questions q INNER JOIN answers a ON q.question_id=a.question_id WHERE product_id=1 GROUP BY q.question_id;
 
 
+//Trying to build from inside out
 
-// SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness JSON_ARRAYAGG(p.url) AS photos FROM answers a INNER JOIN photos p ON a.id=p.answer_id WHERE a.question_id=84 GROUP BY a.id;
-// //EXPLAIN ANALYZE
-// SELECT question_id, question_body, question_date, asker_name, reported, question_helpfulness FROM questions WHERE product_id=1;
-// SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a LEFT JOIN photos p ON a.id=p.answer_id  WHERE a.question_id=1 GROUP BY a.id;
+//1. SELECT JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p LEFT JOIN answers a ON p.answer_id=a.id LEFT JOIN questions q on a.question_id=q.question_id WHERE q.product_id=1)) AS answers FROM answers a INNER JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=1;
+
+
+//2. SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p LEFT JOIN answers a ON p.answer_id=a.id LEFT JOIN questions q on a.question_id=q.question_id WHERE q.product_id=1)) AS answers FROM answers a INNER JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=1;
+
+
+// SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p LEFT JOIN answers a ON p.answer_id=a.id LEFT JOIN questions q on a.question_id=q.question_id WHERE q.product_id=1))) AS answers FROM answers a INNER JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=1;
