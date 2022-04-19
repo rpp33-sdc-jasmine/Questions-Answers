@@ -18,38 +18,12 @@ const makeApp = function(models) {
       count: req.query.count
     };
     models.getQuestions(params.id)
-    .then((questions) => {
-     questions = questions.results;
-     let promises = questions.map((question) => {
-        return models.getAnswers(question);
-     })
-     Promise.all(promises)
-     .then((answers) => {
-       answers = answers[0];
-       questions.forEach(question => {
-         question.question_date = new Date(question.question_date * 1000);
-         question.reported = question.reported === 1;
-         question.answers = {};
-         answers.forEach(answer => {
-           if (answer.question_id === question.question_id) {
-             question.answers[answer.id] = {
-               id: answer.id,
-               body: answer.body,
-               date: new Date(answer.date * 1000),
-               answerer_name: answer.answerer_name,
-               helpfulness: answer.helpfulness,
-               photos: answer.photos };
-           }
-         })
-       })
-       res.status(200).send({ product_id: params.id, results: questions });
-      })
-      .catch((err) => {
-        res.status(500).send(err);
-      })
+    .then((result) => {
+
+      res.status(200).send({result});
     })
     .catch((err) => {
-      console.log(err);
+      console.log('Error');
       res.status(500).send(err);
     })
   });
@@ -79,10 +53,6 @@ const makeApp = function(models) {
     }
     models.getAnswers(params)
     .then((results) => {
-      results.forEach((answer) => {
-        delete answer.question_id
-        answer.date = new Date(answer.date * 1000);
-      })
       res.status(200).send({ question: params.question_id, page: params.page, count: params.count, results });
     })
     .catch((err) => {

@@ -1,19 +1,18 @@
 const db = require('../db').dbConnection;
 const utils = require('../utils.js');
 
-//TODO: Pooling connections
+//TODO: Pooling connections?
 db.connect()
 
 const getQuestions = (id) => {
-    // const questionQuery = `SELECT question_id, question_body, question_date, asker_name, reported, question_helpfulness FROM questions WHERE product_id=${id}`;
-    const questionQuery = `SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p LEFT JOIN answers a ON p.answer_id=a.id LEFT JOIN questions q on a.question_id=q.question_id WHERE q.product_id=${id}))) AS answers FROM answers a INNER JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=${id};`
+    const questionQuery = `SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE p.answer_id=a.id GROUP BY a.id))) AS answers FROM answers a LEFT JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=${id} GROUP BY q.question_id;`
     return new Promise((resolve, reject) => {
       db.query(questionQuery, (err, data) => {
         if (err) {
           reject(Error)
           console.log(err);
         } else {
-          resolve({product_id: id, results: data})
+          resolve(data)
         }
       })
     })
@@ -21,7 +20,8 @@ const getQuestions = (id) => {
 
   const getAnswers = (data) => {
     // TODO If an answer is reported it should not be returned
-    const answerQuery = `SELECT a.question_id, a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a LEFT JOIN photos p ON a.id=p.answer_id  WHERE question_id=${data.question_id} GROUP BY a.id;`;
+    //TODO Answers should return null for photos if there are no photos, not array with null inside it
+    const answerQuery = `SELECT a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a LEFT JOIN photos p ON a.id=p.answer_id WHERE question_id=${data.question_id} GROUP BY a.id;`;
     return new Promise((resolve, reject) => {
       db.query(answerQuery, (err, data) => {
         if (err) {
@@ -33,7 +33,6 @@ const getQuestions = (id) => {
   };
 
   const postQuestion = (question) => {
-    // TODO: question ID needs to autoincremented from the last question in a more robust way
     const questionFields = 'product_id, question_body, question_date, asker_name, email, question_helpfulness, reported';
     return new Promise((resolve, reject) => {
       db.query(`INSERT INTO questions (${questionFields}) VALUES (${question.product_id}, "${question.body}", UNIX_TIMESTAMP(), "${question.name}", "${question.email}", 0, 0);`, (err, data) => {
@@ -172,5 +171,18 @@ const getQuestions = (id) => {
 
 //2. SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p LEFT JOIN answers a ON p.answer_id=a.id LEFT JOIN questions q on a.question_id=q.question_id WHERE q.product_id=1)) AS answers FROM answers a INNER JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=1;
 
+//ALL the answers are from only first question. ALL the photos are from only first answer...
+//3. SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p LEFT JOIN answers a ON p.answer_id=a.id LEFT JOIN questions q on a.question_id=q.question_id WHERE q.product_id=1))) AS answers FROM answers a INNER JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=1;
 
-// SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p LEFT JOIN answers a ON p.answer_id=a.id LEFT JOIN questions q on a.question_id=q.question_id WHERE q.product_id=1))) AS answers FROM answers a INNER JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=1;
+// NOW I am getting all the answers individually (should be grouped), but each answer is associated with the right question! However photos are still really messed up. Only answer 5 should have photos, but they all do. Also the last three photos I'm not sure where they are coming from
+//4. SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p LEFT JOIN answers a ON p.answer_id=a.id LEFT JOIN questions q on a.question_id=q.question_id WHERE q.product_id=1))) AS answers FROM answers a LEFT JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=1 GROUP BY a.id;
+
+// Questions And Answers are Working Right. But Photos Are still Returning the same array for each answer
+//5. SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p LEFT JOIN answers a ON p.answer_id=a.id LEFT JOIN questions q on a.question_id=q.question_id WHERE q.product_id=1))) AS answers FROM answers a LEFT JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=1 GROUP BY q.question_id;
+
+// NOW I am getting photos right, but I'm not getting any answers!! :'(
+// SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE p.answer_id=a.id GROUP BY a.id))) AS answers FROM answers a LEFT JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=1 GROUP BY q.question_id;
+
+
+/////// WINNER!! ///////
+// SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p LEFT JOIN answers a ON p.answer_id=a.id LEFT JOIN questions q on a.question_id=q.question_id WHERE q.product_id=1))) AS answers FROM answers a LEFT JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=1 GROUP BY q.question_id;
