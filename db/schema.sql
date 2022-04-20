@@ -12,8 +12,8 @@ CREATE TABLE questions (
   question_date INT(11),
   asker_name VARCHAR(30),
   email VARCHAR(50),
-  question_helpfulness INT,
   reported INT,
+  question_helpfulness INT,
   PRIMARY KEY (question_id)
 );
 
@@ -26,8 +26,8 @@ CREATE TABLE answers (
   date INT(11),
   answerer_name VARCHAR(30),
   email VARCHAR(30),
-  helpfulness INT,
   reported INT,
+  helpfulness INT,
   PRIMARY KEY (id)
 );
 
