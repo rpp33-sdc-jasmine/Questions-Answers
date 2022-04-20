@@ -7,34 +7,39 @@ import { check } from "k6";
 export const options = {
   thresholds: {
     http_req_failed: ['rate<0.01'], // http errors should be less than 1%
-    http_req_duration: ['p(95)<50'], // 95% of requests should be below 50ms
+    http_req_duration: ['p(95)<2000'], // 95% of requests should be below 2000ms
   },
   scenarios: {
     constant_request_rate: {
       executor: 'constant-arrival-rate',
-      rate: 2000,
+      rate: 500,
       timeUnit: '1s', // 'rate' iterations per second, i.e. 1, 10, 100, 1000 RPS
-      duration: '30s',
+      duration: '1m',
       preAllocatedVUs: 20, // how large the initial pool of VUs would be
-      maxVUs: 600, // if the preAllocatedVUs are not enough, we can initialize more
+      maxVUs: 1000, // if the preAllocatedVUs are not enough, we can initialize more
     },
   },
 };
 
-// /////// GET QUESTIONS & GET ANSWERS ///////
-// export default function () {
-//   //use math.random to get random index each iteration
-//   let num = Math.floor(Math.random() * 300000);
+/////// GET QUESTIONS & GET ANSWERS ///////
+export default function () {
+  /*use math.random to get random index each iteration
+  First 10% Is Slower
+  let num = Math.floor(Math.random() * 350000);
+  Last 10% is Faster
+  let num = 3500000 - (Math.floor(Math.random() * 350000));*/
 
-//   //GET QUESTIONS
-//   // let res = http.get(`http://localhost:4000/qa/questions?product_id=${num}`);
-//   //GET ANSWERS
-//   // let res = http.get(`http://localhost:4000/qa/questions/${num}/answers`);
-// };
+  //GET QUESTIONS
+  let num = Math.floor(Math.random() * 3500000);
+  let res = http.get(`http://localhost:4000/qa/questions?product_id=${num}`);
+  //GET ANSWERS
+  // let num = Math.floor(Math.random() * 6800000);
+  // let res = http.get(`http://localhost:4000/qa/questions/${num}/answers`);
+};
 
 // ///////// POST QUESTIONS & POST ANSWER ///////
 // export default function () {
-//   //Questions
+//   // //Questions
 //   // const questionURL = new URL('http://localhost:4000/qa/questions');
 //   // questionURL.searchParams.append('body', 'This is a body from k6');
 //   // questionURL.searchParams.append('name', 'Caiwin');
@@ -44,7 +49,7 @@ export const options = {
 
 //   //Answers
 //   //use math.random to get random index each iteration
-//   let num = Math.floor(Math.random() * 300000);
+//   let num = Math.floor(Math.random() * 3500000);
 //   const answerURL = new URL(`http://localhost:4000/qa/questions/${num}/answers`);
 //   answerURL.searchParams.append('body', 'This is a body from k6');
 //   answerURL.searchParams.append('name', 'Caiwin');
@@ -56,13 +61,16 @@ export const options = {
 
 
 // ///////// PUT QUESTIONS AND ANSWER ///////
-export default function () {
-  //use math.random to get random index each iteration
-  let num = Math.floor(Math.random() * 300000);
+// export default function () {
 
-  // let res = http.put(`http://localhost:4000/qa/questions/${num}/helpful`);
-  // let res = http.put(`http://localhost:4000/qa/answers/${num}/helpful`);
-  // let res = http.put(`http://localhost:4000/qa/questions/${num}/report`);
-  let res = http.put(`http://localhost:4000/qa/answers/${num}/report`);
-};
+
+//Questions
+//   // let num = Math.floor(Math.random() * 3500000);
+//   // let res = http.put(`http://localhost:4000/qa/questions/${num}/helpful`);
+//   // let res = http.put(`http://localhost:4000/qa/questions/${num}/report`);
+
+//   // let num = Math.floor(Math.random() * 6800000);
+//   // let res = http.put(`http://localhost:4000/qa/answers/${num}/helpful`);
+//   // let res = http.put(`http://localhost:4000/qa/answers/${num}/report`);
+// };
 

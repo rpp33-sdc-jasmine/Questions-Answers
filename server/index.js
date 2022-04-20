@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const models = require('../model/index.js');
-const utils = require('../utils.js')
+const utils = require('../utils.js');
 const port = 4000;
 
 const makeApp = function(models) {

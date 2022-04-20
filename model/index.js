@@ -129,3 +129,14 @@ const getQuestions = (id) => {
      putQuestionReported,
      putAnswerReported
   };
+
+
+
+  //IF there are no answers the quetion is not being returned right now
+  //needs to include 202
+  //1. SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE p.answer_id=a.id GROUP BY a.id))) AS answers FROM answers a LEFT JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=63 GROUP BY q.question_id;
+
+
+  // SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, (SELECT JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE p.answer_id=a.id GROUP BY a.id))) AS answers FROM answers WHERE a.question_id=q.question_id) FROM questions q WHERE q.product_id=63 GROUP BY q.question_id;
+
+  //the problem is I'm selecting the aggregated object from answers on a left join with questions. so if the question doesn't have an answer it's not being selected.
