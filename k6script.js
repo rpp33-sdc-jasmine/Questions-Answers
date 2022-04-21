@@ -12,7 +12,7 @@ export const options = {
   scenarios: {
     constant_request_rate: {
       executor: 'constant-arrival-rate',
-      rate: 500,
+      rate: 1,
       timeUnit: '1s', // 'rate' iterations per second, i.e. 1, 10, 100, 1000 RPS
       duration: '1m',
       preAllocatedVUs: 20, // how large the initial pool of VUs would be
@@ -31,7 +31,10 @@ export default function () {
 
   //GET QUESTIONS
   let num = Math.floor(Math.random() * 3500000);
+  // let num = 1000009;
+  console.log('The num', num);
   let res = http.get(`http://localhost:4000/qa/questions?product_id=${num}`);
+
   //GET ANSWERS
   // let num = Math.floor(Math.random() * 6800000);
   // let res = http.get(`http://localhost:4000/qa/questions/${num}/answers`);

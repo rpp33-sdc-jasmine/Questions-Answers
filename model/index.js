@@ -5,12 +5,14 @@ const utils = require('../utils.js');
 db.connect()
 
 const getQuestions = (id) => {
-    const questionQuery = `SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE p.answer_id=a.id GROUP BY a.id))) AS answers FROM answers a LEFT JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=${id} GROUP BY q.question_id;`
+  //TODO Need to return questions that do not have answers, AND need to handle only returning answers that have not been reported
+    const questionQuery = `SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE p.answer_id=a.id GROUP BY a.id))) AS answers FROM answers a WHERE a.reported < 1 LEFT JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=${id} GROUP BY q.question_id;`
     return new Promise((resolve, reject) => {
       db.query(questionQuery, (err, data) => {
         if (err) {
-          reject(Error)
-          console.log(err);
+          // throw err
+          reject(err)
+          // console.log(err);
         } else {
           resolve(data)
         }
@@ -19,9 +21,8 @@ const getQuestions = (id) => {
   };
 
   const getAnswers = (data) => {
-    // TODO If an answer is reported it should not be returned
     //TODO Answers should return null for photos if there are no photos, not array with null inside it
-    const answerQuery = `SELECT a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a LEFT JOIN photos p ON a.id=p.answer_id WHERE question_id=${data.question_id} GROUP BY a.id;`;
+    const answerQuery = `SELECT a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a LEFT JOIN photos p ON a.id=p.answer_id WHERE question_id=${data.question_id} && a.reported < 1 GROUP BY a.id;`;
     return new Promise((resolve, reject) => {
       db.query(answerQuery, (err, data) => {
         if (err) {
@@ -137,6 +138,33 @@ const getQuestions = (id) => {
   //1. SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE p.answer_id=a.id GROUP BY a.id))) AS answers FROM answers a LEFT JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=63 GROUP BY q.question_id;
 
 
-  // SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, (SELECT JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE p.answer_id=a.id GROUP BY a.id))) AS answers FROM answers WHERE a.question_id=q.question_id) FROM questions q WHERE q.product_id=63 GROUP BY q.question_id;
+  //JSON documents may not contain NULL member names
+  //2. SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE p.answer_id=a.id GROUP BY a.id))) AS answers FROM questions q LEFT JOIN answers a ON a.question_id=q.question_id WHERE q.product_id=63 GROUP BY q.question_id;
 
-  //the problem is I'm selecting the aggregated object from answers on a left join with questions. so if the question doesn't have an answer it's not being selected.
+
+//I basically want to say collect all questions this way -- but I am getting null values. Which the JSON object doesn't like. Basically if there is a NULL value for id, I want to just return an empty string?
+  // SELECT q.question_id, q.question_body, a.id, a.body FROM questions q LEFT JOIN answers a ON a.question_id = q.question_id WHERE q.product_id=63;
+
+
+  //Trying to check if the value is null, syntax error
+  // 3. SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(IF(a.id IS NULL, ''), a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE p.answer_id=a.id GROUP BY a.id))) AS answers FROM questions q LEFT JOIN answers a ON a.question_id=q.question_id WHERE q.product_id=63 GROUP BY q.question_id;
+
+
+
+
+  //The issue: When a question does not have answers. The value would be null. We can't have null as a key.
+  //What I need to do: If I get a null value for a.id I just want to return an empty object AS answers
+  // SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE p.answer_id=a.id GROUP BY a.id))) AS answers FROM questions q LEFT JOIN answers a ON a.question_id=q.question_id WHERE q.product_id=63 GROUP BY q.question_id;
+
+
+
+  //Things to look into
+  // JSON_OBJECTAGG(IFNULL(key, ''), value)
+
+  //Confused about this one
+  //JSON_REMOVE(JSON_OBJECTAGG(IFNULL(column_holding_property_name, 'null__'), column_holding_property_value), '$.null__')
+
+  // ABSENT ON NULL clause
+  // https://oracle-base.com/articles/12c/sql-json-functions-12cr2
+
+  SELECT q.question_id, q.question_body, a.id, a.body FROM questions q LEFT JOIN answers a ON a.question_id = q.question_id WHERE q.product_id=63;
