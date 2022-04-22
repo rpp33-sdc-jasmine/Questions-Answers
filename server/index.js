@@ -19,12 +19,6 @@ const makeApp = function(models) {
     };
     models.getQuestions(params.id)
     .then((result) => {
-      //Should I be sending back 401 when resource is not found?
-      // if (result.length === 0) {
-      //   res.status(401).send(result);
-      // } else {
-      //   res.status(201).send(result);
-      // }
       res.status(200).send({result});
     })
     .catch((err) => {
