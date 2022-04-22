@@ -17,12 +17,13 @@ const makeApp = function(models) {
       page: req.query.page,
       count: req.query.count
     };
+    console.log('The request query', req.query);
     models.getQuestions(params.id)
     .then((result) => {
       res.status(200).send({result});
     })
     .catch((err) => {
-      console.log('Error');
+      console.log(err);
       res.status(500).send(err);
     })
   });
