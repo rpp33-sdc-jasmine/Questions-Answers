@@ -11,6 +11,12 @@ const makeApp = function(models) {
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
 
+
+  //Loader.io verification
+  app.get('/loaderio-f81a174dfaaef8e2a033647ee835b0bd/', (req, res) => {
+    res.status(200).send('loaderio-f81a174dfaaef8e2a033647ee835b0bd');
+  });
+
   app.get('/qa/questions', (req, res) => {
     const params = {
       id: req.query.product_id,
