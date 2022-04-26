@@ -1,7 +1,6 @@
 const db = require('../db').dbConnection;
 const utils = require('../utils.js');
 
-//TODO: Pooling connections?
 db.connect()
 
 const getQuestions = (id) => {
@@ -10,9 +9,7 @@ const getQuestions = (id) => {
     return new Promise((resolve, reject) => {
       db.query(questionQuery, (err, data) => {
         if (err) {
-          // throw err
           return reject(err)
-          // console.log(err);
         } else {
           resolve(data)
         }
