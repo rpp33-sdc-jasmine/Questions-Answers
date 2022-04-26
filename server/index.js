@@ -13,8 +13,8 @@ const makeApp = function(models) {
 
 
   //Loader.io verification
-  app.get('/loaderio-f81a174dfaaef8e2a033647ee835b0bd/', (req, res) => {
-    res.status(200).send('loaderio-f81a174dfaaef8e2a033647ee835b0bd');
+  app.get('/loaderio-3f9b243ef9f770fc19524188ad2410b4/', (req, res) => {
+    res.status(200).send('loaderio-3f9b243ef9f770fc19524188ad2410b4');
   });
 
   app.get('/qa/questions', (req, res) => {
@@ -23,7 +23,6 @@ const makeApp = function(models) {
       page: req.query.page,
       count: req.query.count
     };
-    console.log('The request query', req.query);
     models.getQuestions(params.id)
     .then((result) => {
       res.status(200).send({result});
