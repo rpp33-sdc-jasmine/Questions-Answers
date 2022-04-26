@@ -11,7 +11,7 @@ const getQuestions = (id) => {
       db.query(questionQuery, (err, data) => {
         if (err) {
           // throw err
-          reject(err)
+          return reject(err)
           // console.log(err);
         } else {
           resolve(data)
@@ -26,7 +26,7 @@ const getQuestions = (id) => {
     return new Promise((resolve, reject) => {
       db.query(answerQuery, (err, data) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
         resolve(data);
       })
@@ -38,7 +38,7 @@ const getQuestions = (id) => {
     return new Promise((resolve, reject) => {
       db.query(`INSERT INTO questions (${questionFields}) VALUES (${question.product_id}, "${question.body}", UNIX_TIMESTAMP(), "${question.name}", "${question.email}", 0, 0);`, (err, data) => {
         if (err) {
-            reject(err);
+            return reject(err);
         } else {
           resolve('Success Posting Question');
         }
@@ -52,7 +52,7 @@ const getQuestions = (id) => {
       let answerQueryString = `INSERT INTO answers (question_id, body, date, answerer_name, email, helpfulness, reported) VALUES(${data.question_id}, '${data.body}', UNIX_TIMESTAMP(), '${data.name}', '${data.email}', 0, 0);`;
       db.query(answerQueryString, (err, answerData) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
         let answer_id=answerData.insertId;
         let promises = data.photos.map((photo) => {
@@ -60,7 +60,7 @@ const getQuestions = (id) => {
             let photoQueryString = `INSERT INTO photos (answer_id, url) VALUES(${answer_id}, '${photo}');`;
             db.query(photoQueryString, (err, photoData) => {
               if(err) {
-                reject(err);
+                return reject(err);
               }
               resolve(photoData);
             })
@@ -85,7 +85,7 @@ const getQuestions = (id) => {
     return new Promise((resolve, reject) => {
       db.query(queryString, (err, data) => {
         if (err) {
-          reject(err);
+          return reject(err);
         } else {
           resolve('Success Updating Helpfulness');
         }
@@ -99,7 +99,7 @@ const getQuestions = (id) => {
     return new Promise((resolve, reject) => {
       db.query(queryString, (err, data) => {
         if (err) {
-          reject(err);
+          return reject(err);
         } else {
           resolve('Success Reporting Question');
         }
@@ -113,7 +113,7 @@ const getQuestions = (id) => {
     return new Promise((resolve, reject) => {
       db.query(queryString, (err, data) => {
         if (err) {
-          reject(err);
+          return reject(err);
         } else {
           resolve('Success Reporting Answer');
         }
