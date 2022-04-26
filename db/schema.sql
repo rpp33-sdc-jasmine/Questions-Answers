@@ -2,8 +2,7 @@ DROP DATABASE IF EXISTS questions_answers;
 
 CREATE DATABASE questions_answers;
 
-USE questions_answers
-
+USE questions_answers;
 
 CREATE TABLE questions (
   question_id INT NOT NULL,
