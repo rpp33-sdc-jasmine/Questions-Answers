@@ -19,7 +19,6 @@ const makeApp = function(models) {
     client.get('product' + req.query.product_id)
     .then((result) => {
       if(result !== null){
-        console.log('data accessed from cache!');
         res.send(JSON.parse(result));
       } else {
         next();
