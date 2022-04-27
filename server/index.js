@@ -33,7 +33,6 @@ const makeApp = function(models) {
     client.get('question' + req.params.question_id)
     .then((result) => {
       if(result !== null){
-        console.log('data accessed from cache!');
         res.send(JSON.parse(result));
       } else {
         next();
