@@ -49,7 +49,7 @@ const makeApp = function(models) {
     res.status(200).send('loaderio-3f9b243ef9f770fc19524188ad2410b4');
   });
 
-  app.get('/qa/questions', (req, res) => { //checkQuestionInCache,
+  app.get('/qa/questions', checkQuestionInCache, (req, res) => {
     const params = {
       id: req.query.product_id,
       page: req.query.page,
@@ -57,7 +57,7 @@ const makeApp = function(models) {
     };
     models.getQuestions(params.id)
     .then((result) => {
-      // client.set('product' + params.id, JSON.stringify(result));
+      client.set('product' + params.id, JSON.stringify(result));
       res.status(200).send({result});
     })
     .catch((err) => {
