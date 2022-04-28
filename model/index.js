@@ -165,4 +165,3 @@ const getQuestions = (id) => {
   // https://oracle-base.com/articles/12c/sql-json-functions-12cr2
 
   // SELECT q.question_id, q.question_body, a.id, a.body FROM questions q LEFT JOIN answers a ON a.question_id = q.question_id WHERE q.product_id=63;
-
