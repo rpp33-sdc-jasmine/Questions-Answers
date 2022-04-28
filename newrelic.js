@@ -22,7 +22,7 @@ exports.config = {
    * this feature: https://docs.newrelic.com/docs/transition-guide-distributed-tracing
    * Default is false.
    */
-  agent_enabled: 'NEW_RELIC_ENABLED',
+  agent_enabled: 'NEW_RELIC_ENABLED=false',
   distributed_tracing: {
     /**
      * Enables/disables distributed tracing.
