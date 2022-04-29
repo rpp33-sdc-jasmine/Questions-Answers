@@ -15,8 +15,8 @@ const makeApp = function(models) {
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
 
-  client.flushdb( function (err, succeeded) {
-    console.log(succeeded); // will be true if successfull
+  client.flushall('ASYNC', (result) => {
+    console.log('Result:', result);
   });
 
   //Cache middleware
