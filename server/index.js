@@ -83,7 +83,7 @@ const makeApp = function(models) {
     })
   });
 
-  app.get('/qa/questions/:question_id/answers', checkAnswerInCache, (req, res) => {
+  app.get('/qa/questions/:question_id/answers', (req, res) => { //checkAnswerInCache
     const params = {
       question_id: req.params.question_id,
       page: req.query.page || 1,
@@ -91,7 +91,7 @@ const makeApp = function(models) {
     }
     models.getAnswers(params)
     .then((result) => {
-      client.set('question' + params.question_id, JSON.stringify(result));
+      // client.set('question' + params.question_id, JSON.stringify(result));
       res.status(200).send({ question: params.question_id, page: params.page, count: params.count, result });
     })
     .catch((err) => {
