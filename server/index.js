@@ -49,7 +49,7 @@ const makeApp = function(models) {
     res.status(200).send('loaderio-d30978893e6c2bbe524d3ab3cd758490');
   });
 
-  app.get('/qa/questions', (req, res) => { //checkQuestionInCache
+  app.get('/qa/questions', checkQuestionInCache, (req, res) => {
     const params = {
       id: req.query.product_id,
       page: req.query.page,
