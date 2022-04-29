@@ -15,6 +15,10 @@ const makeApp = function(models) {
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
 
+  client.flushdb( function (err, succeeded) {
+    console.log(succeeded); // will be true if successfull
+  });
+
   //Cache middleware
   const checkQuestionInCache = (req, res, next) =>{
     client.get('product' + req.query.product_id)
