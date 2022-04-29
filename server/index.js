@@ -15,14 +15,12 @@ const makeApp = function(models) {
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
 
-  client.flushall('ASYNC', (result) => {
-    console.log('Result:', result);
-  });
 
   //Cache middleware
   const checkQuestionInCache = (req, res, next) =>{
     client.get('product' + req.query.product_id)
     .then((result) => {
+      client.flushall();
       if(result !== null){
         res.send(JSON.parse(result));
       } else {
