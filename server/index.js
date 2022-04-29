@@ -16,40 +16,40 @@ const makeApp = function(models) {
 
 
   // //Cache middleware
-  // const checkQuestionInCache = (req, res, next) =>{
-  //   client.get('product' + req.query.product_id)
-  //   .then((result) => {
-  //     if(result !== null){
-  //       res.send(JSON.parse(result));
-  //     } else {
-  //       next();
-  //     }
-  //   })
-  //   .catch((err) => {
-  //     console.log('Error:' + err);
-  //   })
-  // }
+  const checkQuestionInCache = (req, res, next) =>{
+    client.get('product' + req.query.product_id)
+    .then((result) => {
+      if(result !== null){
+        res.send(JSON.parse(result));
+      } else {
+        next();
+      }
+    })
+    .catch((err) => {
+      console.log('Error:' + err);
+    })
+  }
 
-  // const checkAnswerInCache = (req, res, next) =>{
-  //   client.get('question' + req.params.question_id)
-  //   .then((result) => {
-  //     if(result !== null){
-  //       res.send(JSON.parse(result));
-  //     } else {
-  //       next();
-  //     }
-  //   })
-  //   .catch((err) => {
-  //     console.log('Error:' + err);
-  //   })
-  // }
+  const checkAnswerInCache = (req, res, next) =>{
+    client.get('question' + req.params.question_id)
+    .then((result) => {
+      if(result !== null){
+        res.send(JSON.parse(result));
+      } else {
+        next();
+      }
+    })
+    .catch((err) => {
+      console.log('Error:' + err);
+    })
+  }
 
   //Loader.io verification
   app.get('/loaderio-d30978893e6c2bbe524d3ab3cd758490/', (req, res) => {
     res.status(200).send('loaderio-d30978893e6c2bbe524d3ab3cd758490');
   });
 
-  app.get('/qa/questions', (req, res) => { //checkQuestionInCache
+  app.get('/qa/questions', checkQuestionInCache, (req, res) => {
     const params = {
       id: req.query.product_id,
       page: req.query.page,
@@ -57,7 +57,7 @@ const makeApp = function(models) {
     };
     models.getQuestions(params.id)
     .then((result) => {
-      // client.set('product' + params.id, JSON.stringify(result));
+      client.set('product' + params.id, JSON.stringify(result));
       res.status(200).send({result});
     })
     .catch((err) => {
@@ -83,7 +83,7 @@ const makeApp = function(models) {
     })
   });
 
-  app.get('/qa/questions/:question_id/answers', (req, res) => { //checkAnswerInCache
+  app.get('/qa/questions/:question_id/answers', checkAnswerInCache, (req, res) => {
     const params = {
       question_id: req.params.question_id,
       page: req.query.page || 1,
