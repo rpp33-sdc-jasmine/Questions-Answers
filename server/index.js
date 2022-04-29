@@ -20,7 +20,6 @@ const makeApp = function(models) {
   const checkQuestionInCache = (req, res, next) =>{
     client.get('product' + req.query.product_id)
     .then((result) => {
-      client.flushall();
       if(result !== null){
         res.send(JSON.parse(result));
       } else {
