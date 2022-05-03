@@ -10,7 +10,7 @@ const port = 4000;
 const makeApp = function(models) {
   const app = express();
   // const client = redis.createClient(6379);
-  client.connect();
+  // client.connect();
   app.use(cors());
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
