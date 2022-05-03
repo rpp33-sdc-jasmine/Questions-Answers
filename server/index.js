@@ -1,6 +1,6 @@
-// const newrelic = require('newrelic')
+const newrelic = require('newrelic')
 const express = require('express');
-const redis = require('redis');
+// const redis = require('redis');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const models = require('../model/index.js');
@@ -16,41 +16,41 @@ const makeApp = function(models) {
   app.use(bodyParser.json());
 
 
-  // //Cache middleware
-  const checkQuestionInCache = (req, res, next) =>{
-    client.get('product' + req.query.product_id)
-    .then((result) => {
-      if(result !== null){
-        res.send(JSON.parse(result));
-      } else {
-        next();
-      }
-    })
-    .catch((err) => {
-      console.log('Error:' + err);
-    })
-  }
+  // // //Cache middleware
+  // const checkQuestionInCache = (req, res, next) =>{
+  //   client.get('product' + req.query.product_id)
+  //   .then((result) => {
+  //     if(result !== null){
+  //       res.send(JSON.parse(result));
+  //     } else {
+  //       next();
+  //     }
+  //   })
+  //   .catch((err) => {
+  //     console.log('Error:' + err);
+  //   })
+  // }
 
-  const checkAnswerInCache = (req, res, next) =>{
-    client.get('question' + req.params.question_id)
-    .then((result) => {
-      if(result !== null){
-        res.send(JSON.parse(result));
-      } else {
-        next();
-      }
-    })
-    .catch((err) => {
-      console.log('Error:' + err);
-    })
-  }
+  // const checkAnswerInCache = (req, res, next) =>{
+  //   client.get('question' + req.params.question_id)
+  //   .then((result) => {
+  //     if(result !== null){
+  //       res.send(JSON.parse(result));
+  //     } else {
+  //       next();
+  //     }
+  //   })
+  //   .catch((err) => {
+  //     console.log('Error:' + err);
+  //   })
+  // }
 
   //Loader.io Verification
   app.get('/loaderio-9f0836452b34e6f1983a647c8db4f40f/', (req, res) => {
     res.status(200).send('loaderio-9f0836452b34e6f1983a647c8db4f40f');
   });
 
-  app.get('/qa/questions', checkQuestionInCache, (req, res) => {
+  app.get('/qa/questions', (req, res) => { //checkQuestionInCache
     const params = {
       id: req.query.product_id,
       page: req.query.page,
@@ -58,7 +58,7 @@ const makeApp = function(models) {
     };
     models.getQuestions(params.id)
     .then((result) => {
-      client.set('product' + params.id, JSON.stringify(result));
+      // client.set('product' + params.id, JSON.stringify(result));
       res.status(200).send({result});
     })
     .catch((err) => {
@@ -84,7 +84,7 @@ const makeApp = function(models) {
     })
   });
 
-  app.get('/qa/questions/:question_id/answers', checkAnswerInCache, (req, res) => {
+  app.get('/qa/questions/:question_id/answers', (req, res) => { //checkAnswerInCache
     const params = {
       question_id: req.params.question_id,
       page: req.query.page || 1,
@@ -92,11 +92,12 @@ const makeApp = function(models) {
     }
     models.getAnswers(params)
     .then((result) => {
-      client.set('question' + params.question_id, JSON.stringify(result));
+      // client.set('question' + params.question_id, JSON.stringify(result));
       res.status(200).send({ question: params.question_id, page: params.page, count: params.count, result });
     })
     .catch((err) => {
       res.status(500).send(err);
+      console.log('The error is:', err);
     })
   });
 
@@ -170,3 +171,16 @@ app.listen(port, () => {
 });
 
 module.exports = makeApp;
+
+
+upstream sdc-api {
+  server 3.236.155.206:4000;
+  server 3.82.23.192:4000;
+}
+server {
+  listen 80;
+  server_name _;
+  access_log /var/log/nginx;
+  error_log logs/error.log;
+  location / { proxy_pass http://sdc-api$request_uri; }
+}
