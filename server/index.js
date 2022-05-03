@@ -46,8 +46,8 @@ const makeApp = function(models) {
   }
 
   //Loader.io verification
-  app.get('/loaderio-d30978893e6c2bbe524d3ab3cd758490/', (req, res) => {
-    res.status(200).send('loaderio-d30978893e6c2bbe524d3ab3cd758490');
+  app.get('/loaderio-9f0836452b34e6f1983a647c8db4f40f/', (req, res) => {
+    res.status(200).send('loaderio-9f0836452b34e6f1983a647c8db4f40f');
   });
 
   app.get('/qa/questions', checkQuestionInCache, (req, res) => {
