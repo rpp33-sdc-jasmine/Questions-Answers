@@ -171,16 +171,3 @@ app.listen(port, () => {
 });
 
 module.exports = makeApp;
-
-
-upstream sdc-api {
-  server 3.236.155.206:4000;
-  server 3.82.23.192:4000;
-}
-server {
-  listen 80;
-  server_name _;
-  access_log /var/log/nginx;
-  error_log logs/error.log;
-  location / { proxy_pass http://sdc-api$request_uri; }
-}
