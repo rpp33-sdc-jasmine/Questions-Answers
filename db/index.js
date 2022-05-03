@@ -5,6 +5,9 @@ const dbConnection = mysql.createConnection({
   user: 'sdc',
   password: 'SDCpassword!0@',
   database: 'questions_answers'
+  // user: 'root',
+  // password: '',
+  // database: 'questions_answers'
 });
 
 module.exports.dbConnection = dbConnection;
