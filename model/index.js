@@ -1,6 +1,7 @@
 const db = require('../db').dbConnection;
 const utils = require('../utils.js');
 
+//Todo: Connection Pooling
 db.connect()
 
 const getQuestions = (id) => {
@@ -165,3 +166,6 @@ const getQuestions = (id) => {
   // https://oracle-base.com/articles/12c/sql-json-functions-12cr2
 
   // SELECT q.question_id, q.question_body, a.id, a.body FROM questions q LEFT JOIN answers a ON a.question_id = q.question_id WHERE q.product_id=63;
+
+  // SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.reported, q.question_helpfulness, JSON_OBJECTAGG(a.id, JSON_OBJECT('id', a.id, 'body', a.body, 'date', a.date, 'answerer_name', a.answerer_name, 'helpfulness', a.helpfulness, 'photos', (SELECT JSON_ARRAYAGG(p.url) FROM photos p WHERE p.answer_id=a.id GROUP BY a.id))) AS answers FROM answers a LEFT JOIN questions q ON a.question_id=q.question_id WHERE q.product_id=4963 GROUP BY q.question_id;
+
