@@ -45,7 +45,7 @@ const makeApp = function(models) {
     })
   }
 
-  //Loader.io verification
+  //Loader.io Verification
   app.get('/loaderio-9f0836452b34e6f1983a647c8db4f40f/', (req, res) => {
     res.status(200).send('loaderio-9f0836452b34e6f1983a647c8db4f40f');
   });
