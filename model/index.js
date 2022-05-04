@@ -1,8 +1,20 @@
-const db = require('../db').dbConnection;
+// const db = require('../db').dbConnection;
 const utils = require('../utils.js');
 
 //Todo: Connection Pooling
-db.connect()
+const mysql = require('mysql2');
+
+  const db = mysql.createPool({
+    // user: 'root',
+    // password: '',
+    host: '172.31.24.98',
+    user: 'sdc',
+    password: 'SDCpassword!0@',
+    database: 'questions_answers',
+    waitForConnections: true,
+    connectionLimit: 150,
+    queueLimit: 0,
+  });
 
 const getQuestions = (id) => {
   //TODO Need to return questions that do not have answers, AND need to handle only returning answers that have not been reported
