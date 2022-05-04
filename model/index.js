@@ -32,8 +32,7 @@ const getQuestions = (id) => {
 
   const getAnswers = (data) => {
     //TODO Answers should return null for photos if there are no photos, not array with null inside it
-    // const answerQuery = `SELECT a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a LEFT JOIN photos p ON a.id=p.answer_id WHERE question_id=${data.question_id} && a.reported < 1 GROUP BY a.id;`;
-    const answerQuery = `SELECT a.id, a.body, a.date, a.answerer_name, a.helpfulness FROM answers a WHERE question_id=${data.question_id};`;
+    const answerQuery = `SELECT a.id, a.body, a.date, a.answerer_name, a.helpfulness, JSON_ARRAYAGG(p.url) AS photos FROM answers a LEFT JOIN photos p ON a.id=p.answer_id WHERE question_id=${data.question_id} && a.reported < 1 GROUP BY a.id;`;
     return new Promise((resolve, reject) => {
       db.query(answerQuery, (err, data) => {
         if (err) {
