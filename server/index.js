@@ -1,5 +1,5 @@
 // const newrelic = require('newrelic')
-cons morgan = require('morgan');
+const morgan = require('morgan');
 const express = require('express');
 // const redis = require('redis');
 const bodyParser = require('body-parser');

@@ -15,9 +15,6 @@ const mysql = require('mysql2');
     connectionLimit: 150,
     queueLimit: 0,
   });
-  db.on('connection', (connection) => {
-    console.log('Connected to MySql db');
-});
 
 db.on('error', (err) => {
     console.log('Error connecting to db', err);
