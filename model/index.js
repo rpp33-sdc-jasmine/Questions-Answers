@@ -15,11 +15,11 @@ const mysql = require('mysql2');
     connectionLimit: 150,
     queueLimit: 0,
   });
-  pool.on('connection', (connection) => {
+  db.on('connection', (connection) => {
     console.log('Connected to MySql db');
 });
 
-pool.on('error', (err) => {
+db.on('error', (err) => {
     console.log('Error connecting to db', err);
 });
 
