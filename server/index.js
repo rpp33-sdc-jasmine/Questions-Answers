@@ -1,4 +1,5 @@
 // const newrelic = require('newrelic')
+cons morgan = require('morgan');
 const express = require('express');
 // const redis = require('redis');
 const bodyParser = require('body-parser');
@@ -9,6 +10,7 @@ const port = 4000;
 
 const makeApp = function(models) {
   const app = express();
+  app.use(morgan('combined'));
   // const client = redis.createClient(6379);
   // client.connect();
   app.use(cors());
