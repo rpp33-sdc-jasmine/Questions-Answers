@@ -9,12 +9,19 @@ const mysql = require('mysql2');
     // password: '',
     host: '172.31.84.75',
     user: 'root',
-    password: '',
+    password: 'sdcpassword',
     database: 'questions_answers',
     waitForConnections: true,
     connectionLimit: 150,
     queueLimit: 0,
   });
+  pool.on('connection', (connection) => {
+    console.log('Connected to MySql db');
+});
+
+pool.on('error', (err) => {
+    console.log('Error connecting to db', err);
+});
 
 const getQuestions = (id) => {
   //TODO Need to return questions that do not have answers, AND need to handle only returning answers that have not been reported
