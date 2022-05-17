@@ -1,5 +1,5 @@
 // const newrelic = require('newrelic')
-const morgan = require('morgan');
+// const morgan = require('morgan');
 const express = require('express');
 const compression = require('compression')
 // const redis = require('redis');
@@ -11,7 +11,7 @@ const port = 4000;
 
 const makeApp = function(models) {
   const app = express();
-  app.use(morgan('combined'));
+  // app.use(morgan('combined'));
   // const client = redis.createClient(6379);
   // client.connect();
   app.use(compression())
