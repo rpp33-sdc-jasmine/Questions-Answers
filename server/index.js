@@ -1,6 +1,7 @@
 // const newrelic = require('newrelic')
 const morgan = require('morgan');
 const express = require('express');
+const compression = require('compression')
 // const redis = require('redis');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -13,6 +14,7 @@ const makeApp = function(models) {
   app.use(morgan('combined'));
   // const client = redis.createClient(6379);
   // client.connect();
+  app.use(compression())
   app.use(cors());
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
