@@ -16,8 +16,8 @@ const makeApp = function(models) {
   app.use(bodyParser.json());
 
   //Loader.io Verification
-  app.get('/loaderio-b2796c0c9e730b5ee8aef79dbd49fd14/', (req, res) => {
-    res.status(200).send('loaderio-b2796c0c9e730b5ee8aef79dbd49fd14');
+  app.get('/loaderio-9afd3084de671de2f5bcb436b5bd0236/', (req, res) => {
+    res.status(200).send('loaderio-9afd3084de671de2f5bcb436b5bd0236');
   });
 
   app.get('/qa/questions', (req, res) => {
