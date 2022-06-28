@@ -3,3 +3,4 @@ node_modules
 coverage
 newrelic.js
 .env
+.env.local
