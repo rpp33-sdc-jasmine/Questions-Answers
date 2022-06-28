@@ -1,4 +1,6 @@
 const express = require('express');
+const compression = require('compression')
+// const redis = require('redis');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const models = require('../model/index.js');
@@ -7,9 +9,16 @@ const port = 4000;
 
 const makeApp = function(models) {
   const app = express();
+
+  app.use(compression())
   app.use(cors());
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
+
+  //Loader.io Verification
+  app.get('/loaderio-b2796c0c9e730b5ee8aef79dbd49fd14/', (req, res) => {
+    res.status(200).send('loaderio-b2796c0c9e730b5ee8aef79dbd49fd14');
+  });
 
   app.get('/qa/questions', (req, res) => {
     const params = {
@@ -22,7 +31,7 @@ const makeApp = function(models) {
       res.status(200).send({result});
     })
     .catch((err) => {
-      console.log('Error');
+      console.log(err);
       res.status(500).send(err);
     })
   });
@@ -51,11 +60,12 @@ const makeApp = function(models) {
       count: req.query.count || 5
     }
     models.getAnswers(params)
-    .then((results) => {
-      res.status(200).send({ question: params.question_id, page: params.page, count: params.count, results });
+    .then((result) => {
+      res.status(200).send({ question: params.question_id, page: params.page, count: params.count, result });
     })
     .catch((err) => {
       res.status(500).send(err);
+      console.log('The error is:', err);
     })
   });
 
