@@ -2,8 +2,7 @@ DROP DATABASE IF EXISTS questions_answers;
 
 CREATE DATABASE questions_answers;
 
-USE questions_answers
-
+USE questions_answers;
 
 CREATE TABLE questions (
   question_id INT NOT NULL,
@@ -17,7 +16,7 @@ CREATE TABLE questions (
   PRIMARY KEY (question_id)
 );
 
-CREATE INDEX questions ON questions (product_id, question_id);
+CREATE INDEX questions ON questions (product_id);
 
 CREATE TABLE answers (
   id INT NOT NULL,
@@ -31,7 +30,7 @@ CREATE TABLE answers (
   PRIMARY KEY (id)
 );
 
-CREATE INDEX answers ON answers (question_id, id);
+CREATE INDEX answers ON answers (question_id);
 
 CREATE TABLE photos (
   photo_id INT NOT NULL,
@@ -40,7 +39,7 @@ CREATE TABLE photos (
   PRIMARY KEY (photo_id)
 );
 
-CREATE INDEX photos ON photos (answer_id, photo_id);
+CREATE INDEX photos ON photos (answer_id);
 
 LOAD DATA LOCAL INFILE '/Users/caitlinwinters/Desktop/Questions-Answers-Data/questions.csv'
 INTO TABLE questions
