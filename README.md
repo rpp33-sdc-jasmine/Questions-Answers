@@ -84,6 +84,5 @@ This microservice was deployed and scaled to a throughput of 4000rps with a late
 - Performance was measured on a warm cache (approximately 30%) using [k6](https://k6.io/docs/) (locally) and [loader.io](https://loader.io/) (deployed)<br>
   ### Example test from loader.io
   Please note "clients per second" was tested, despite the read-out from loader.io stating "4000 clients over 1 min" <br>
-  ![loader.io test type](https://i.ibb.co/kXxZpLK/clients-per-second-test-screen-shot.png)
-  ## -------------------------------------------------------------------------------------------------------------------
+  ## ------------------------------------------------------
 ![loader.io results](https://i.ibb.co/Mnkfzpw/q-4000-after-cache.png)
